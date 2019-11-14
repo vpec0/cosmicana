@@ -1,0 +1,8 @@
+#include "CosmicAna.fcl"
+
+services:
+{
+   TFileService: { fileName: "CosmicAnaHist.root" }
+   TimeTracker: {}
+   @table::dunefd_simulation_services
+}
