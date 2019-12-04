@@ -75,6 +75,8 @@ private:
     TTree* fTree;
 
     struct Muon_t {
+	double genPos[4];
+	double genMom[4];
 	double startPos[4]; /// where the muon entered the active TPC volume
 	double endPos[4]; /// where the muon stopped or left the active TPC volume
 	double startMom[4]; /// momentum at where the muon entered the active TPC volume
@@ -145,6 +147,9 @@ void CosmicAna::beginJob()
     fTree -> Branch("Run"   , &fRun   , "Run/I");
     fTree -> Branch("SubRun", &fSubRun, "SubRun/I");
 
+    fTree -> Branch("genPos", fMuon.genPos, "genPos[4]/D");
+    fTree -> Branch("genMom", fMuon.genMom, "genMom[4]/D");
+
     fTree -> Branch("startPos", fMuon.startPos, "startPos[4]/D");
     fTree -> Branch("endPos", fMuon.endPos, "endPos[4]/D");
     fTree -> Branch("startMom", fMuon.startMom, "startMom[4]/D");
@@ -211,6 +216,10 @@ void CosmicAna::analyze(art::Event const& e)
 
 	// find whether it has entered the TPC and where
 	auto it = traj.begin(); // iterator is a pointer to a pair of 2 TLorentzVectors, pos, mom
+	// store generated position and momentum
+	it->first.GetXYZT(fMuon.genPos);
+	it->second.GetXYZT(fMuon.genMom);
+
 	for (; it != traj.end(); it++)
 	    if ( insideTPC(it->first.Vect()) ) break;
 
@@ -271,6 +280,10 @@ void CosmicAna::analyze(art::Event const& e)
 	    fMuon.endProcess = particle.EndProcess();
 	}
 	fMuon.exited = exited;
+
+
+	std::cout<<"Particle process: "<< particle.Process()<<std::endl;
+	std::cout<<"Particle end process: "<< particle.EndProcess()<<std::endl;
 
 	it--; // return to the last inside position of the trajectory
 	it->first.GetXYZT(fMuon.endPos);
