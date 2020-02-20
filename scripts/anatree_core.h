@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Tue Dec 17 12:01:11 2019 by ROOT version 6.18/04
+// Wed Feb 12 15:53:40 2020 by ROOT version 6.18/04
 // from TTree anatree/analysis tree
-// found on file: data/largeprod/MUSUN_dunefd_merged_gen_g4_detsim_reco_ana.root
+// found on file: data/kumar/20002100/20002100/MUSUN_dunefd_20002100_gen_g4_detsim_reco_ana.root
 //////////////////////////////////////////////////////////
 
 #ifndef anatree_h
@@ -13,7 +13,18 @@
 #include <TFile.h>
 
 // Header file for the classes stored in the TTree if any.
-#include "vector"
+#include <vector>
+
+
+const int MAX_HITS = 100000;
+const int MAX_VERTICES = 100;
+const int MAX_CLUSTERS = 10000;
+const int MAX_MCEVTS = 10;
+const int MAX_GENIE_PRIMARIES = 10;
+const int MAX_G4_PARTICLES = 100000;
+const int MAX_SHOWERS = 100;
+const int MAX_TRACKS = 5000;
+
 
 class anatree {
 public :
@@ -40,516 +51,516 @@ public :
    Double_t        potnumi101;
    Int_t           no_hits;
    Int_t           no_hits_stored;
-   Short_t         hit_tpc[72376];   //[no_hits_stored]
-   Short_t         hit_plane[72376];   //[no_hits_stored]
-   Short_t         hit_wire[72376];   //[no_hits_stored]
-   Short_t         hit_channel[72376];   //[no_hits_stored]
-   Float_t         hit_peakT[72376];   //[no_hits_stored]
-   Float_t         hit_charge[72376];   //[no_hits_stored]
-   Float_t         hit_ph[72376];   //[no_hits_stored]
-   Float_t         hit_startT[72376];   //[no_hits_stored]
-   Float_t         hit_endT[72376];   //[no_hits_stored]
-   Float_t         hit_rms[72376];   //[no_hits_stored]
-   Float_t         hit_trueX[72376];   //[no_hits_stored]
-   Float_t         hit_goodnessOfFit[72376];   //[no_hits_stored]
-   Short_t         hit_multiplicity[72376];   //[no_hits_stored]
-   Short_t         hit_trkid[72376];   //[no_hits_stored]
-   Short_t         hit_trkKey[72376];   //[no_hits_stored]
-   Short_t         hit_clusterid[72376];   //[no_hits_stored]
-   Short_t         hit_clusterKey[72376];   //[no_hits_stored]
-   Short_t         hit_spacepointid[72376];   //[no_hits_stored]
-   Short_t         hit_spacepointKey[72376];   //[no_hits_stored]
-   Float_t         hit_nelec[72376];   //[no_hits_stored]
-   Float_t         hit_energy[72376];   //[no_hits_stored]
+   Short_t         hit_tpc[MAX_HITS];
+   Short_t         hit_plane[MAX_HITS];
+   Short_t         hit_wire[MAX_HITS];
+   Short_t         hit_channel[MAX_HITS];
+   Float_t         hit_peakT[MAX_HITS];
+   Float_t         hit_charge[MAX_HITS];
+   Float_t         hit_ph[MAX_HITS];
+   Float_t         hit_startT[MAX_HITS];
+   Float_t         hit_endT[MAX_HITS];
+   Float_t         hit_rms[MAX_HITS];
+   Float_t         hit_trueX[MAX_HITS];
+   Float_t         hit_goodnessOfFit[MAX_HITS];
+   Short_t         hit_multiplicity[MAX_HITS];
+   Short_t         hit_trkid[MAX_HITS];
+   Short_t         hit_trkKey[MAX_HITS];
+   Short_t         hit_clusterid[MAX_HITS];
+   Short_t         hit_clusterKey[MAX_HITS];
+   Short_t         hit_spacepointid[MAX_HITS];
+   Short_t         hit_spacepointKey[MAX_HITS];
+   Float_t         hit_nelec[MAX_HITS];
+   Float_t         hit_energy[MAX_HITS];
    Short_t         nnuvtx;
-   Float_t         nuvtxx[1];   //[nnuvtx]
-   Float_t         nuvtxy[1];   //[nnuvtx]
-   Float_t         nuvtxz[1];   //[nnuvtx]
-   Short_t         nuvtxpdg[1];   //[nnuvtx]
+   Float_t         nuvtxx[MAX_VERTICES];
+   Float_t         nuvtxy[MAX_VERTICES];
+   Float_t         nuvtxz[MAX_VERTICES];
+   Short_t         nuvtxpdg[MAX_VERTICES];
    Short_t         nclusters;
-   Short_t         clusterId[3878];   //[nclusters]
-   Short_t         clusterView[3878];   //[nclusters]
-   Float_t         cluster_StartCharge[3878];   //[nclusters]
-   Float_t         cluster_StartAngle[3878];   //[nclusters]
-   Float_t         cluster_EndCharge[3878];   //[nclusters]
-   Float_t         cluster_EndAngle[3878];   //[nclusters]
-   Float_t         cluster_Integral[3878];   //[nclusters]
-   Float_t         cluster_IntegralAverage[3878];   //[nclusters]
-   Float_t         cluster_SummedADC[3878];   //[nclusters]
-   Float_t         cluster_SummedADCaverage[3878];   //[nclusters]
-   Float_t         cluster_MultipleHitDensity[3878];   //[nclusters]
-   Float_t         cluster_Width[3878];   //[nclusters]
-   Short_t         cluster_NHits[3878];   //[nclusters]
-   Short_t         cluster_StartWire[3878];   //[nclusters]
-   Short_t         cluster_StartTick[3878];   //[nclusters]
-   Short_t         cluster_EndWire[3878];   //[nclusters]
-   Short_t         cluster_EndTick[3878];   //[nclusters]
-   Short_t         cluncosmictags_tagger[3878];   //[nclusters]
-   Float_t         clucosmicscore_tagger[3878];   //[nclusters]
-   Short_t         clucosmictype_tagger[3878];   //[nclusters]
+   Short_t         clusterId[MAX_CLUSTERS];
+   Short_t         clusterView[MAX_CLUSTERS];
+   Float_t         cluster_StartCharge[MAX_CLUSTERS];
+   Float_t         cluster_StartAngle[MAX_CLUSTERS];
+   Float_t         cluster_EndCharge[MAX_CLUSTERS];
+   Float_t         cluster_EndAngle[MAX_CLUSTERS];
+   Float_t         cluster_Integral[MAX_CLUSTERS];
+   Float_t         cluster_IntegralAverage[MAX_CLUSTERS];
+   Float_t         cluster_SummedADC[MAX_CLUSTERS];
+   Float_t         cluster_SummedADCaverage[MAX_CLUSTERS];
+   Float_t         cluster_MultipleHitDensity[MAX_CLUSTERS];
+   Float_t         cluster_Width[MAX_CLUSTERS];
+   Short_t         cluster_NHits[MAX_CLUSTERS];
+   Short_t         cluster_StartWire[MAX_CLUSTERS];
+   Short_t         cluster_StartTick[MAX_CLUSTERS];
+   Short_t         cluster_EndWire[MAX_CLUSTERS];
+   Short_t         cluster_EndTick[MAX_CLUSTERS];
+   Short_t         cluncosmictags_tagger[MAX_CLUSTERS];
+   Float_t         clucosmicscore_tagger[MAX_CLUSTERS];
+   Short_t         clucosmictype_tagger[MAX_CLUSTERS];
    Char_t          kNTracker;
    Char_t          kNVertexAlgos;
    Char_t          kNShowerAlgos;
    Int_t           mcevts_truth;
-   Int_t           nuPDG_truth[1];   //[mcevts_truth]
-   Int_t           ccnc_truth[1];   //[mcevts_truth]
-   Int_t           mode_truth[1];   //[mcevts_truth]
-   Float_t         enu_truth[1];   //[mcevts_truth]
-   Float_t         Q2_truth[1];   //[mcevts_truth]
-   Float_t         W_truth[1];   //[mcevts_truth]
-   Float_t         X_truth[1];   //[mcevts_truth]
-   Float_t         Y_truth[1];   //[mcevts_truth]
-   Int_t           hitnuc_truth[1];   //[mcevts_truth]
-   Float_t         nuvtxx_truth[1];   //[mcevts_truth]
-   Float_t         nuvtxy_truth[1];   //[mcevts_truth]
-   Float_t         nuvtxz_truth[1];   //[mcevts_truth]
-   Float_t         nu_dcosx_truth[1];   //[mcevts_truth]
-   Float_t         nu_dcosy_truth[1];   //[mcevts_truth]
-   Float_t         nu_dcosz_truth[1];   //[mcevts_truth]
-   Float_t         lep_mom_truth[1];   //[mcevts_truth]
-   Float_t         lep_dcosx_truth[1];   //[mcevts_truth]
-   Float_t         lep_dcosy_truth[1];   //[mcevts_truth]
-   Float_t         lep_dcosz_truth[1];   //[mcevts_truth]
-   Float_t         vx_flux[1];   //[mcevts_truth]
-   Float_t         vy_flux[1];   //[mcevts_truth]
-   Float_t         vz_flux[1];   //[mcevts_truth]
-   Float_t         pdpx_flux[1];   //[mcevts_truth]
-   Float_t         pdpy_flux[1];   //[mcevts_truth]
-   Float_t         pdpz_flux[1];   //[mcevts_truth]
-   Float_t         ppdxdz_flux[1];   //[mcevts_truth]
-   Float_t         ppdydz_flux[1];   //[mcevts_truth]
-   Float_t         pppz_flux[1];   //[mcevts_truth]
-   Int_t           ptype_flux[1];   //[mcevts_truth]
-   Float_t         ppvx_flux[1];   //[mcevts_truth]
-   Float_t         ppvy_flux[1];   //[mcevts_truth]
-   Float_t         ppvz_flux[1];   //[mcevts_truth]
-   Float_t         muparpx_flux[1];   //[mcevts_truth]
-   Float_t         muparpy_flux[1];   //[mcevts_truth]
-   Float_t         muparpz_flux[1];   //[mcevts_truth]
-   Float_t         mupare_flux[1];   //[mcevts_truth]
-   Int_t           tgen_flux[1];   //[mcevts_truth]
-   Int_t           tgptype_flux[1];   //[mcevts_truth]
-   Float_t         tgppx_flux[1];   //[mcevts_truth]
-   Float_t         tgppy_flux[1];   //[mcevts_truth]
-   Float_t         tgppz_flux[1];   //[mcevts_truth]
-   Float_t         tprivx_flux[1];   //[mcevts_truth]
-   Float_t         tprivy_flux[1];   //[mcevts_truth]
-   Float_t         tprivz_flux[1];   //[mcevts_truth]
-   Float_t         dk2gen_flux[1];   //[mcevts_truth]
-   Float_t         gen2vtx_flux[1];   //[mcevts_truth]
-   Float_t         tpx_flux[1];   //[mcevts_truth]
-   Float_t         tpy_flux[1];   //[mcevts_truth]
-   Float_t         tpz_flux[1];   //[mcevts_truth]
-   Int_t           tptype_flux[1];   //[mcevts_truth]
+   Int_t           nuPDG_truth[MAX_MCEVTS];
+   Int_t           ccnc_truth[MAX_MCEVTS];
+   Int_t           mode_truth[MAX_MCEVTS];
+   Float_t         enu_truth[MAX_MCEVTS];
+   Float_t         Q2_truth[MAX_MCEVTS];
+   Float_t         W_truth[MAX_MCEVTS];
+   Float_t         X_truth[MAX_MCEVTS];
+   Float_t         Y_truth[MAX_MCEVTS];
+   Int_t           hitnuc_truth[MAX_MCEVTS];
+   Float_t         nuvtxx_truth[MAX_MCEVTS];
+   Float_t         nuvtxy_truth[MAX_MCEVTS];
+   Float_t         nuvtxz_truth[MAX_MCEVTS];
+   Float_t         nu_dcosx_truth[MAX_MCEVTS];
+   Float_t         nu_dcosy_truth[MAX_MCEVTS];
+   Float_t         nu_dcosz_truth[MAX_MCEVTS];
+   Float_t         lep_mom_truth[MAX_MCEVTS];
+   Float_t         lep_dcosx_truth[MAX_MCEVTS];
+   Float_t         lep_dcosy_truth[MAX_MCEVTS];
+   Float_t         lep_dcosz_truth[MAX_MCEVTS];
+   Float_t         vx_flux[MAX_MCEVTS];
+   Float_t         vy_flux[MAX_MCEVTS];
+   Float_t         vz_flux[MAX_MCEVTS];
+   Float_t         pdpx_flux[MAX_MCEVTS];
+   Float_t         pdpy_flux[MAX_MCEVTS];
+   Float_t         pdpz_flux[MAX_MCEVTS];
+   Float_t         ppdxdz_flux[MAX_MCEVTS];
+   Float_t         ppdydz_flux[MAX_MCEVTS];
+   Float_t         pppz_flux[MAX_MCEVTS];
+   Int_t           ptype_flux[MAX_MCEVTS];
+   Float_t         ppvx_flux[MAX_MCEVTS];
+   Float_t         ppvy_flux[MAX_MCEVTS];
+   Float_t         ppvz_flux[MAX_MCEVTS];
+   Float_t         muparpx_flux[MAX_MCEVTS];
+   Float_t         muparpy_flux[MAX_MCEVTS];
+   Float_t         muparpz_flux[MAX_MCEVTS];
+   Float_t         mupare_flux[MAX_MCEVTS];
+   Int_t           tgen_flux[MAX_MCEVTS];
+   Int_t           tgptype_flux[MAX_MCEVTS];
+   Float_t         tgppx_flux[MAX_MCEVTS];
+   Float_t         tgppy_flux[MAX_MCEVTS];
+   Float_t         tgppz_flux[MAX_MCEVTS];
+   Float_t         tprivx_flux[MAX_MCEVTS];
+   Float_t         tprivy_flux[MAX_MCEVTS];
+   Float_t         tprivz_flux[MAX_MCEVTS];
+   Float_t         dk2gen_flux[MAX_MCEVTS];
+   Float_t         gen2vtx_flux[MAX_MCEVTS];
+   Float_t         tpx_flux[MAX_MCEVTS];
+   Float_t         tpy_flux[MAX_MCEVTS];
+   Float_t         tpz_flux[MAX_MCEVTS];
+   Int_t           tptype_flux[MAX_MCEVTS];
    Int_t           genie_no_primaries;
-   Int_t           genie_primaries_pdg[1];   //[genie_no_primaries]
-   Float_t         genie_Eng[1];   //[genie_no_primaries]
-   Float_t         genie_Px[1];   //[genie_no_primaries]
-   Float_t         genie_Py[1];   //[genie_no_primaries]
-   Float_t         genie_Pz[1];   //[genie_no_primaries]
-   Float_t         genie_P[1];   //[genie_no_primaries]
-   Int_t           genie_status_code[1];   //[genie_no_primaries]
-   Float_t         genie_mass[1];   //[genie_no_primaries]
-   Int_t           genie_trackID[1];   //[genie_no_primaries]
-   Int_t           genie_ND[1];   //[genie_no_primaries]
-   Int_t           genie_mother[1];   //[genie_no_primaries]
+   Int_t           genie_primaries_pdg[MAX_GENIE_PRIMARIES];
+   Float_t         genie_Eng[MAX_GENIE_PRIMARIES];
+   Float_t         genie_Px[MAX_GENIE_PRIMARIES];
+   Float_t         genie_Py[MAX_GENIE_PRIMARIES];
+   Float_t         genie_Pz[MAX_GENIE_PRIMARIES];
+   Float_t         genie_P[MAX_GENIE_PRIMARIES];
+   Int_t           genie_status_code[MAX_GENIE_PRIMARIES];
+   Float_t         genie_mass[MAX_GENIE_PRIMARIES];
+   Int_t           genie_trackID[MAX_GENIE_PRIMARIES];
+   Int_t           genie_ND[MAX_GENIE_PRIMARIES];
+   Int_t           genie_mother[MAX_GENIE_PRIMARIES];
    Int_t           no_primaries;
    Int_t           geant_list_size;
    Int_t           geant_list_size_in_tpcAV;
-   Int_t           pdg[83171];   //[geant_list_size]
-   Int_t           status[83171];   //[geant_list_size]
-   Float_t         Mass[83171];   //[geant_list_size]
-   Float_t         Eng[83171];   //[geant_list_size]
-   Float_t         EndE[83171];   //[geant_list_size]
-   Float_t         Px[83171];   //[geant_list_size]
-   Float_t         Py[83171];   //[geant_list_size]
-   Float_t         Pz[83171];   //[geant_list_size]
-   Float_t         P[83171];   //[geant_list_size]
-   Float_t         StartPointx[83171];   //[geant_list_size]
-   Float_t         StartPointy[83171];   //[geant_list_size]
-   Float_t         StartPointz[83171];   //[geant_list_size]
-   Float_t         StartT[83171];   //[geant_list_size]
-   Float_t         EndPointx[83171];   //[geant_list_size]
-   Float_t         EndPointy[83171];   //[geant_list_size]
-   Float_t         EndPointz[83171];   //[geant_list_size]
-   Float_t         EndT[83171];   //[geant_list_size]
-   Float_t         theta[83171];   //[geant_list_size]
-   Float_t         phi[83171];   //[geant_list_size]
-   Float_t         theta_xz[83171];   //[geant_list_size]
-   Float_t         theta_yz[83171];   //[geant_list_size]
-   Float_t         pathlen[83171];   //[geant_list_size]
-   Int_t           inTPCActive[83171];   //[geant_list_size]
-   Float_t         StartPointx_tpcAV[83171];   //[geant_list_size]
-   Float_t         StartPointy_tpcAV[83171];   //[geant_list_size]
-   Float_t         StartPointz_tpcAV[83171];   //[geant_list_size]
-   Float_t         StartT_tpcAV[83171];   //[geant_list_size]
-   Float_t         StartE_tpcAV[83171];   //[geant_list_size]
-   Float_t         StartP_tpcAV[83171];   //[geant_list_size]
-   Float_t         StartPx_tpcAV[83171];   //[geant_list_size]
-   Float_t         StartPy_tpcAV[83171];   //[geant_list_size]
-   Float_t         StartPz_tpcAV[83171];   //[geant_list_size]
-   Float_t         EndPointx_tpcAV[83171];   //[geant_list_size]
-   Float_t         EndPointy_tpcAV[83171];   //[geant_list_size]
-   Float_t         EndPointz_tpcAV[83171];   //[geant_list_size]
-   Float_t         EndT_tpcAV[83171];   //[geant_list_size]
-   Float_t         EndE_tpcAV[83171];   //[geant_list_size]
-   Float_t         EndP_tpcAV[83171];   //[geant_list_size]
-   Float_t         EndPx_tpcAV[83171];   //[geant_list_size]
-   Float_t         EndPy_tpcAV[83171];   //[geant_list_size]
-   Float_t         EndPz_tpcAV[83171];   //[geant_list_size]
-   Float_t         pathlen_drifted[83171];   //[geant_list_size]
-   Int_t           inTPCDrifted[83171];   //[geant_list_size]
-   Float_t         StartPointx_drifted[83171];   //[geant_list_size]
-   Float_t         StartPointy_drifted[83171];   //[geant_list_size]
-   Float_t         StartPointz_drifted[83171];   //[geant_list_size]
-   Float_t         StartT_drifted[83171];   //[geant_list_size]
-   Float_t         StartE_drifted[83171];   //[geant_list_size]
-   Float_t         StartP_drifted[83171];   //[geant_list_size]
-   Float_t         StartPx_drifted[83171];   //[geant_list_size]
-   Float_t         StartPy_drifted[83171];   //[geant_list_size]
-   Float_t         StartPz_drifted[83171];   //[geant_list_size]
-   Float_t         EndPointx_drifted[83171];   //[geant_list_size]
-   Float_t         EndPointy_drifted[83171];   //[geant_list_size]
-   Float_t         EndPointz_drifted[83171];   //[geant_list_size]
-   Float_t         EndT_drifted[83171];   //[geant_list_size]
-   Float_t         EndE_drifted[83171];   //[geant_list_size]
-   Float_t         EndP_drifted[83171];   //[geant_list_size]
-   Float_t         EndPx_drifted[83171];   //[geant_list_size]
-   Float_t         EndPy_drifted[83171];   //[geant_list_size]
-   Float_t         EndPz_drifted[83171];   //[geant_list_size]
-   Int_t           NumberDaughters[83171];   //[geant_list_size]
-   Int_t           Mother[83171];   //[geant_list_size]
-   Int_t           TrackId[83171];   //[geant_list_size]
-   Int_t           MergedId[83171];   //[geant_list_size]
-   Int_t           origin[83171];   //[geant_list_size]
-   Int_t           MCTruthIndex[83171];   //[geant_list_size]
-   Int_t           process_primary[83171];   //[geant_list_size]
+   Int_t           pdg[MAX_G4_PARTICLES];
+   Int_t           status[MAX_G4_PARTICLES];
+   Float_t         Mass[MAX_G4_PARTICLES];
+   Float_t         Eng[MAX_G4_PARTICLES];
+   Float_t         EndE[MAX_G4_PARTICLES];
+   Float_t         Px[MAX_G4_PARTICLES];
+   Float_t         Py[MAX_G4_PARTICLES];
+   Float_t         Pz[MAX_G4_PARTICLES];
+   Float_t         P[MAX_G4_PARTICLES];
+   Float_t         StartPointx[MAX_G4_PARTICLES];
+   Float_t         StartPointy[MAX_G4_PARTICLES];
+   Float_t         StartPointz[MAX_G4_PARTICLES];
+   Float_t         StartT[MAX_G4_PARTICLES];
+   Float_t         EndPointx[MAX_G4_PARTICLES];
+   Float_t         EndPointy[MAX_G4_PARTICLES];
+   Float_t         EndPointz[MAX_G4_PARTICLES];
+   Float_t         EndT[MAX_G4_PARTICLES];
+   Float_t         theta[MAX_G4_PARTICLES];
+   Float_t         phi[MAX_G4_PARTICLES];
+   Float_t         theta_xz[MAX_G4_PARTICLES];
+   Float_t         theta_yz[MAX_G4_PARTICLES];
+   Float_t         pathlen[MAX_G4_PARTICLES];
+   Int_t           inTPCActive[MAX_G4_PARTICLES];
+   Float_t         StartPointx_tpcAV[MAX_G4_PARTICLES];
+   Float_t         StartPointy_tpcAV[MAX_G4_PARTICLES];
+   Float_t         StartPointz_tpcAV[MAX_G4_PARTICLES];
+   Float_t         StartT_tpcAV[MAX_G4_PARTICLES];
+   Float_t         StartE_tpcAV[MAX_G4_PARTICLES];
+   Float_t         StartP_tpcAV[MAX_G4_PARTICLES];
+   Float_t         StartPx_tpcAV[MAX_G4_PARTICLES];
+   Float_t         StartPy_tpcAV[MAX_G4_PARTICLES];
+   Float_t         StartPz_tpcAV[MAX_G4_PARTICLES];
+   Float_t         EndPointx_tpcAV[MAX_G4_PARTICLES];
+   Float_t         EndPointy_tpcAV[MAX_G4_PARTICLES];
+   Float_t         EndPointz_tpcAV[MAX_G4_PARTICLES];
+   Float_t         EndT_tpcAV[MAX_G4_PARTICLES];
+   Float_t         EndE_tpcAV[MAX_G4_PARTICLES];
+   Float_t         EndP_tpcAV[MAX_G4_PARTICLES];
+   Float_t         EndPx_tpcAV[MAX_G4_PARTICLES];
+   Float_t         EndPy_tpcAV[MAX_G4_PARTICLES];
+   Float_t         EndPz_tpcAV[MAX_G4_PARTICLES];
+   Float_t         pathlen_drifted[MAX_G4_PARTICLES];
+   Int_t           inTPCDrifted[MAX_G4_PARTICLES];
+   Float_t         StartPointx_drifted[MAX_G4_PARTICLES];
+   Float_t         StartPointy_drifted[MAX_G4_PARTICLES];
+   Float_t         StartPointz_drifted[MAX_G4_PARTICLES];
+   Float_t         StartT_drifted[MAX_G4_PARTICLES];
+   Float_t         StartE_drifted[MAX_G4_PARTICLES];
+   Float_t         StartP_drifted[MAX_G4_PARTICLES];
+   Float_t         StartPx_drifted[MAX_G4_PARTICLES];
+   Float_t         StartPy_drifted[MAX_G4_PARTICLES];
+   Float_t         StartPz_drifted[MAX_G4_PARTICLES];
+   Float_t         EndPointx_drifted[MAX_G4_PARTICLES];
+   Float_t         EndPointy_drifted[MAX_G4_PARTICLES];
+   Float_t         EndPointz_drifted[MAX_G4_PARTICLES];
+   Float_t         EndT_drifted[MAX_G4_PARTICLES];
+   Float_t         EndE_drifted[MAX_G4_PARTICLES];
+   Float_t         EndP_drifted[MAX_G4_PARTICLES];
+   Float_t         EndPx_drifted[MAX_G4_PARTICLES];
+   Float_t         EndPy_drifted[MAX_G4_PARTICLES];
+   Float_t         EndPz_drifted[MAX_G4_PARTICLES];
+   Int_t           NumberDaughters[MAX_G4_PARTICLES];
+   Int_t           Mother[MAX_G4_PARTICLES];
+   Int_t           TrackId[MAX_G4_PARTICLES];
+   Int_t           MergedId[MAX_G4_PARTICLES];
+   Int_t           origin[MAX_G4_PARTICLES];
+   Int_t           MCTruthIndex[MAX_G4_PARTICLES];
+   Int_t           process_primary[MAX_G4_PARTICLES];
    vector<string>  *processname;
    Short_t         nshowers_emshower;
-   Short_t         showerID_emshower[22];   //[nshowers_emshower]
-   Short_t         shwr_bestplane_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_length_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_startdcosx_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_startdcosy_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_startdcosz_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_startx_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_starty_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_startz_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_totEng_emshower[22][3];   //[nshowers_emshower]
-   Float_t         shwr_dedx_emshower[22][3];   //[nshowers_emshower]
-   Float_t         shwr_mipEng_emshower[22][3];   //[nshowers_emshower]
-   Short_t         shwr_hasPFParticle_emshower[22];   //[nshowers_emshower]
-   Short_t         shwr_PFParticleID_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_pidmvamu_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_pidmvae_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_pidmvapich_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_pidmvaphoton_emshower[22];   //[nshowers_emshower]
-   Float_t         shwr_pidmvapr_emshower[22];   //[nshowers_emshower]
+   Short_t         showerID_emshower[MAX_SHOWERS];
+   Short_t         shwr_bestplane_emshower[MAX_SHOWERS];
+   Float_t         shwr_length_emshower[MAX_SHOWERS];
+   Float_t         shwr_startdcosx_emshower[MAX_SHOWERS];
+   Float_t         shwr_startdcosy_emshower[MAX_SHOWERS];
+   Float_t         shwr_startdcosz_emshower[MAX_SHOWERS];
+   Float_t         shwr_startx_emshower[MAX_SHOWERS];
+   Float_t         shwr_starty_emshower[MAX_SHOWERS];
+   Float_t         shwr_startz_emshower[MAX_SHOWERS];
+   Float_t         shwr_totEng_emshower[MAX_SHOWERS][3];
+   Float_t         shwr_dedx_emshower[MAX_SHOWERS][3];
+   Float_t         shwr_mipEng_emshower[MAX_SHOWERS][3];
+   Short_t         shwr_hasPFParticle_emshower[MAX_SHOWERS];
+   Short_t         shwr_PFParticleID_emshower[MAX_SHOWERS];
+   Float_t         shwr_pidmvamu_emshower[MAX_SHOWERS];
+   Float_t         shwr_pidmvae_emshower[MAX_SHOWERS];
+   Float_t         shwr_pidmvapich_emshower[MAX_SHOWERS];
+   Float_t         shwr_pidmvaphoton_emshower[MAX_SHOWERS];
+   Float_t         shwr_pidmvapr_emshower[MAX_SHOWERS];
    Short_t         ntracks_pmtrack;
-   Short_t         trkId_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trkncosmictags_tagger_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkcosmicscore_tagger_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trkcosmictype_tagger_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trkncosmictags_containmenttagger_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkcosmicscore_containmenttagger_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trkcosmictype_containmenttagger_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trkncosmictags_flashmatch_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkcosmicscore_flashmatch_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trkcosmictype_flashmatch_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkke_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkrange_pmtrack[971][3];   //[ntracks_pmtrack]
-   Int_t           trkidtruth_pmtrack[971][3];   //[ntracks_pmtrack]
-   Short_t         trkorigin_pmtrack[971][3];   //[ntracks_pmtrack]
-   Int_t           trkpdgtruth_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkefftruth_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkpurtruth_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkpitchc_pmtrack[971][3];   //[ntracks_pmtrack]
-   Short_t         ntrkhits_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkdedx_pmtrack[971][3][2000];   //[ntracks_pmtrack]
-   Float_t         trkdqdx_pmtrack[971][3][2000];   //[ntracks_pmtrack]
-   Float_t         trkresrg_pmtrack[971][3][2000];   //[ntracks_pmtrack]
-   Int_t           trktpc_pmtrack[971][3][2000];   //[ntracks_pmtrack]
-   Float_t         trkxyz_pmtrack[971][3][2000][3];   //[ntracks_pmtrack]
-   Float_t         trkstartx_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkstarty_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkstartz_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkstartd_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkendx_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkendy_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkendz_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkendd_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkflashT0_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trktrueT0_pmtrack[971];   //[ntracks_pmtrack]
-   Int_t           trkg4id_pmtrack[971];   //[ntracks_pmtrack]
-   Int_t           trkorig_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkpurity_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkcompleteness_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trktheta_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkphi_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkstartdcosx_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkstartdcosy_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkstartdcosz_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkenddcosx_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkenddcosy_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkenddcosz_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkthetaxz_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkthetayz_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkmom_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkmomrange_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkmommschi2_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkmommsllhd_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trklen_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trksvtxid_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trkevtxid_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkpidmvamu_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkpidmvae_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkpidmvapich_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkpidmvaphoton_pmtrack[971];   //[ntracks_pmtrack]
-   Float_t         trkpidmvapr_pmtrack[971];   //[ntracks_pmtrack]
-   Int_t           trkpidpdg_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkpidchi_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkpidchipr_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkpidchika_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkpidchipi_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkpidchimu_pmtrack[971][3];   //[ntracks_pmtrack]
-   Float_t         trkpidpida_pmtrack[971][3];   //[ntracks_pmtrack]
-   Short_t         trkpidbestplane_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trkhasPFParticle_pmtrack[971];   //[ntracks_pmtrack]
-   Short_t         trkPFParticleID_pmtrack[971];   //[ntracks_pmtrack]
+   Short_t         trkId_pmtrack[MAX_TRACKS];
+   Short_t         trkncosmictags_tagger_pmtrack[MAX_TRACKS];
+   Float_t         trkcosmicscore_tagger_pmtrack[MAX_TRACKS];
+   Short_t         trkcosmictype_tagger_pmtrack[MAX_TRACKS];
+   Short_t         trkncosmictags_containmenttagger_pmtrack[MAX_TRACKS];
+   Float_t         trkcosmicscore_containmenttagger_pmtrack[MAX_TRACKS];
+   Short_t         trkcosmictype_containmenttagger_pmtrack[MAX_TRACKS];
+   Short_t         trkncosmictags_flashmatch_pmtrack[MAX_TRACKS];
+   Float_t         trkcosmicscore_flashmatch_pmtrack[MAX_TRACKS];
+   Short_t         trkcosmictype_flashmatch_pmtrack[MAX_TRACKS];
+   Float_t         trkke_pmtrack[MAX_TRACKS][3];
+   Float_t         trkrange_pmtrack[MAX_TRACKS][3];
+   Int_t           trkidtruth_pmtrack[MAX_TRACKS][3];
+   Short_t         trkorigin_pmtrack[MAX_TRACKS][3];
+   Int_t           trkpdgtruth_pmtrack[MAX_TRACKS][3];
+   Float_t         trkefftruth_pmtrack[MAX_TRACKS][3];
+   Float_t         trkpurtruth_pmtrack[MAX_TRACKS][3];
+   Float_t         trkpitchc_pmtrack[MAX_TRACKS][3];
+   Short_t         ntrkhits_pmtrack[MAX_TRACKS][3];
+   Float_t         trkdedx_pmtrack[MAX_TRACKS][3][2000];
+   Float_t         trkdqdx_pmtrack[MAX_TRACKS][3][2000];
+   Float_t         trkresrg_pmtrack[MAX_TRACKS][3][2000];
+   Int_t           trktpc_pmtrack[MAX_TRACKS][3][2000];
+   Float_t         trkxyz_pmtrack[MAX_TRACKS][3][2000][3];
+   Float_t         trkstartx_pmtrack[MAX_TRACKS];
+   Float_t         trkstarty_pmtrack[MAX_TRACKS];
+   Float_t         trkstartz_pmtrack[MAX_TRACKS];
+   Float_t         trkstartd_pmtrack[MAX_TRACKS];
+   Float_t         trkendx_pmtrack[MAX_TRACKS];
+   Float_t         trkendy_pmtrack[MAX_TRACKS];
+   Float_t         trkendz_pmtrack[MAX_TRACKS];
+   Float_t         trkendd_pmtrack[MAX_TRACKS];
+   Float_t         trkflashT0_pmtrack[MAX_TRACKS];
+   Float_t         trktrueT0_pmtrack[MAX_TRACKS];
+   Int_t           trkg4id_pmtrack[MAX_TRACKS];
+   Int_t           trkorig_pmtrack[MAX_TRACKS];
+   Float_t         trkpurity_pmtrack[MAX_TRACKS];
+   Float_t         trkcompleteness_pmtrack[MAX_TRACKS];
+   Float_t         trktheta_pmtrack[MAX_TRACKS];
+   Float_t         trkphi_pmtrack[MAX_TRACKS];
+   Float_t         trkstartdcosx_pmtrack[MAX_TRACKS];
+   Float_t         trkstartdcosy_pmtrack[MAX_TRACKS];
+   Float_t         trkstartdcosz_pmtrack[MAX_TRACKS];
+   Float_t         trkenddcosx_pmtrack[MAX_TRACKS];
+   Float_t         trkenddcosy_pmtrack[MAX_TRACKS];
+   Float_t         trkenddcosz_pmtrack[MAX_TRACKS];
+   Float_t         trkthetaxz_pmtrack[MAX_TRACKS];
+   Float_t         trkthetayz_pmtrack[MAX_TRACKS];
+   Float_t         trkmom_pmtrack[MAX_TRACKS];
+   Float_t         trkmomrange_pmtrack[MAX_TRACKS];
+   Float_t         trkmommschi2_pmtrack[MAX_TRACKS];
+   Float_t         trkmommsllhd_pmtrack[MAX_TRACKS];
+   Float_t         trklen_pmtrack[MAX_TRACKS];
+   Short_t         trksvtxid_pmtrack[MAX_TRACKS];
+   Short_t         trkevtxid_pmtrack[MAX_TRACKS];
+   Float_t         trkpidmvamu_pmtrack[MAX_TRACKS];
+   Float_t         trkpidmvae_pmtrack[MAX_TRACKS];
+   Float_t         trkpidmvapich_pmtrack[MAX_TRACKS];
+   Float_t         trkpidmvaphoton_pmtrack[MAX_TRACKS];
+   Float_t         trkpidmvapr_pmtrack[MAX_TRACKS];
+   Int_t           trkpidpdg_pmtrack[MAX_TRACKS][3];
+   Float_t         trkpidchi_pmtrack[MAX_TRACKS][3];
+   Float_t         trkpidchipr_pmtrack[MAX_TRACKS][3];
+   Float_t         trkpidchika_pmtrack[MAX_TRACKS][3];
+   Float_t         trkpidchipi_pmtrack[MAX_TRACKS][3];
+   Float_t         trkpidchimu_pmtrack[MAX_TRACKS][3];
+   Float_t         trkpidpida_pmtrack[MAX_TRACKS][3];
+   Short_t         trkpidbestplane_pmtrack[MAX_TRACKS];
+   Short_t         trkhasPFParticle_pmtrack[MAX_TRACKS];
+   Short_t         trkPFParticleID_pmtrack[MAX_TRACKS];
    Short_t         ntracks_pmtracktc;
-   Short_t         trkId_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trkncosmictags_tagger_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkcosmicscore_tagger_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trkcosmictype_tagger_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trkncosmictags_containmenttagger_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkcosmicscore_containmenttagger_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trkcosmictype_containmenttagger_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trkncosmictags_flashmatch_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkcosmicscore_flashmatch_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trkcosmictype_flashmatch_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkke_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkrange_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Int_t           trkidtruth_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Short_t         trkorigin_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Int_t           trkpdgtruth_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkefftruth_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkpurtruth_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkpitchc_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Short_t         ntrkhits_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkdedx_pmtracktc[867][3][2000];   //[ntracks_pmtracktc]
-   Float_t         trkdqdx_pmtracktc[867][3][2000];   //[ntracks_pmtracktc]
-   Float_t         trkresrg_pmtracktc[867][3][2000];   //[ntracks_pmtracktc]
-   Int_t           trktpc_pmtracktc[867][3][2000];   //[ntracks_pmtracktc]
-   Float_t         trkxyz_pmtracktc[867][3][2000][3];   //[ntracks_pmtracktc]
-   Float_t         trkstartx_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkstarty_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkstartz_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkstartd_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkendx_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkendy_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkendz_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkendd_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkflashT0_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trktrueT0_pmtracktc[867];   //[ntracks_pmtracktc]
-   Int_t           trkg4id_pmtracktc[867];   //[ntracks_pmtracktc]
-   Int_t           trkorig_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkpurity_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkcompleteness_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trktheta_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkphi_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkstartdcosx_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkstartdcosy_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkstartdcosz_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkenddcosx_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkenddcosy_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkenddcosz_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkthetaxz_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkthetayz_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkmom_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkmomrange_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkmommschi2_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkmommsllhd_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trklen_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trksvtxid_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trkevtxid_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkpidmvamu_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkpidmvae_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkpidmvapich_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkpidmvaphoton_pmtracktc[867];   //[ntracks_pmtracktc]
-   Float_t         trkpidmvapr_pmtracktc[867];   //[ntracks_pmtracktc]
-   Int_t           trkpidpdg_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkpidchi_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkpidchipr_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkpidchika_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkpidchipi_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkpidchimu_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Float_t         trkpidpida_pmtracktc[867][3];   //[ntracks_pmtracktc]
-   Short_t         trkpidbestplane_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trkhasPFParticle_pmtracktc[867];   //[ntracks_pmtracktc]
-   Short_t         trkPFParticleID_pmtracktc[867];   //[ntracks_pmtracktc]
+   Short_t         trkId_pmtracktc[MAX_TRACKS];
+   Short_t         trkncosmictags_tagger_pmtracktc[MAX_TRACKS];
+   Float_t         trkcosmicscore_tagger_pmtracktc[MAX_TRACKS];
+   Short_t         trkcosmictype_tagger_pmtracktc[MAX_TRACKS];
+   Short_t         trkncosmictags_containmenttagger_pmtracktc[MAX_TRACKS];
+   Float_t         trkcosmicscore_containmenttagger_pmtracktc[MAX_TRACKS];
+   Short_t         trkcosmictype_containmenttagger_pmtracktc[MAX_TRACKS];
+   Short_t         trkncosmictags_flashmatch_pmtracktc[MAX_TRACKS];
+   Float_t         trkcosmicscore_flashmatch_pmtracktc[MAX_TRACKS];
+   Short_t         trkcosmictype_flashmatch_pmtracktc[MAX_TRACKS];
+   Float_t         trkke_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkrange_pmtracktc[MAX_TRACKS][3];
+   Int_t           trkidtruth_pmtracktc[MAX_TRACKS][3];
+   Short_t         trkorigin_pmtracktc[MAX_TRACKS][3];
+   Int_t           trkpdgtruth_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkefftruth_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkpurtruth_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkpitchc_pmtracktc[MAX_TRACKS][3];
+   Short_t         ntrkhits_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkdedx_pmtracktc[MAX_TRACKS][3][2000];
+   Float_t         trkdqdx_pmtracktc[MAX_TRACKS][3][2000];
+   Float_t         trkresrg_pmtracktc[MAX_TRACKS][3][2000];
+   Int_t           trktpc_pmtracktc[MAX_TRACKS][3][2000];
+   Float_t         trkxyz_pmtracktc[MAX_TRACKS][3][2000][3];
+   Float_t         trkstartx_pmtracktc[MAX_TRACKS];
+   Float_t         trkstarty_pmtracktc[MAX_TRACKS];
+   Float_t         trkstartz_pmtracktc[MAX_TRACKS];
+   Float_t         trkstartd_pmtracktc[MAX_TRACKS];
+   Float_t         trkendx_pmtracktc[MAX_TRACKS];
+   Float_t         trkendy_pmtracktc[MAX_TRACKS];
+   Float_t         trkendz_pmtracktc[MAX_TRACKS];
+   Float_t         trkendd_pmtracktc[MAX_TRACKS];
+   Float_t         trkflashT0_pmtracktc[MAX_TRACKS];
+   Float_t         trktrueT0_pmtracktc[MAX_TRACKS];
+   Int_t           trkg4id_pmtracktc[MAX_TRACKS];
+   Int_t           trkorig_pmtracktc[MAX_TRACKS];
+   Float_t         trkpurity_pmtracktc[MAX_TRACKS];
+   Float_t         trkcompleteness_pmtracktc[MAX_TRACKS];
+   Float_t         trktheta_pmtracktc[MAX_TRACKS];
+   Float_t         trkphi_pmtracktc[MAX_TRACKS];
+   Float_t         trkstartdcosx_pmtracktc[MAX_TRACKS];
+   Float_t         trkstartdcosy_pmtracktc[MAX_TRACKS];
+   Float_t         trkstartdcosz_pmtracktc[MAX_TRACKS];
+   Float_t         trkenddcosx_pmtracktc[MAX_TRACKS];
+   Float_t         trkenddcosy_pmtracktc[MAX_TRACKS];
+   Float_t         trkenddcosz_pmtracktc[MAX_TRACKS];
+   Float_t         trkthetaxz_pmtracktc[MAX_TRACKS];
+   Float_t         trkthetayz_pmtracktc[MAX_TRACKS];
+   Float_t         trkmom_pmtracktc[MAX_TRACKS];
+   Float_t         trkmomrange_pmtracktc[MAX_TRACKS];
+   Float_t         trkmommschi2_pmtracktc[MAX_TRACKS];
+   Float_t         trkmommsllhd_pmtracktc[MAX_TRACKS];
+   Float_t         trklen_pmtracktc[MAX_TRACKS];
+   Short_t         trksvtxid_pmtracktc[MAX_TRACKS];
+   Short_t         trkevtxid_pmtracktc[MAX_TRACKS];
+   Float_t         trkpidmvamu_pmtracktc[MAX_TRACKS];
+   Float_t         trkpidmvae_pmtracktc[MAX_TRACKS];
+   Float_t         trkpidmvapich_pmtracktc[MAX_TRACKS];
+   Float_t         trkpidmvaphoton_pmtracktc[MAX_TRACKS];
+   Float_t         trkpidmvapr_pmtracktc[MAX_TRACKS];
+   Int_t           trkpidpdg_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkpidchi_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkpidchipr_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkpidchika_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkpidchipi_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkpidchimu_pmtracktc[MAX_TRACKS][3];
+   Float_t         trkpidpida_pmtracktc[MAX_TRACKS][3];
+   Short_t         trkpidbestplane_pmtracktc[MAX_TRACKS];
+   Short_t         trkhasPFParticle_pmtracktc[MAX_TRACKS];
+   Short_t         trkPFParticleID_pmtracktc[MAX_TRACKS];
    Short_t         ntracks_pandoraTrack;
-   Short_t         trkId_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trkncosmictags_tagger_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkcosmicscore_tagger_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trkcosmictype_tagger_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trkncosmictags_containmenttagger_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkcosmicscore_containmenttagger_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trkcosmictype_containmenttagger_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trkncosmictags_flashmatch_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkcosmicscore_flashmatch_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trkcosmictype_flashmatch_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkke_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkrange_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Int_t           trkidtruth_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Short_t         trkorigin_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Int_t           trkpdgtruth_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkefftruth_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkpurtruth_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkpitchc_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Short_t         ntrkhits_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkdedx_pandoraTrack[21][3][2000];   //[ntracks_pandoraTrack]
-   Float_t         trkdqdx_pandoraTrack[21][3][2000];   //[ntracks_pandoraTrack]
-   Float_t         trkresrg_pandoraTrack[21][3][2000];   //[ntracks_pandoraTrack]
-   Int_t           trktpc_pandoraTrack[21][3][2000];   //[ntracks_pandoraTrack]
-   Float_t         trkxyz_pandoraTrack[21][3][2000][3];   //[ntracks_pandoraTrack]
-   Float_t         trkstartx_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkstarty_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkstartz_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkstartd_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkendx_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkendy_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkendz_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkendd_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkflashT0_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trktrueT0_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Int_t           trkg4id_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Int_t           trkorig_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkpurity_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkcompleteness_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trktheta_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkphi_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkstartdcosx_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkstartdcosy_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkstartdcosz_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkenddcosx_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkenddcosy_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkenddcosz_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkthetaxz_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkthetayz_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkmom_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkmomrange_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkmommschi2_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkmommsllhd_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trklen_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trksvtxid_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trkevtxid_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkpidmvamu_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkpidmvae_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkpidmvapich_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkpidmvaphoton_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Float_t         trkpidmvapr_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Int_t           trkpidpdg_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkpidchi_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkpidchipr_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkpidchika_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkpidchipi_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkpidchimu_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Float_t         trkpidpida_pandoraTrack[21][3];   //[ntracks_pandoraTrack]
-   Short_t         trkpidbestplane_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trkhasPFParticle_pandoraTrack[21];   //[ntracks_pandoraTrack]
-   Short_t         trkPFParticleID_pandoraTrack[21];   //[ntracks_pandoraTrack]
+   Short_t         trkId_pandoraTrack[MAX_TRACKS];
+   Short_t         trkncosmictags_tagger_pandoraTrack[MAX_TRACKS];
+   Float_t         trkcosmicscore_tagger_pandoraTrack[MAX_TRACKS];
+   Short_t         trkcosmictype_tagger_pandoraTrack[MAX_TRACKS];
+   Short_t         trkncosmictags_containmenttagger_pandoraTrack[MAX_TRACKS];
+   Float_t         trkcosmicscore_containmenttagger_pandoraTrack[MAX_TRACKS];
+   Short_t         trkcosmictype_containmenttagger_pandoraTrack[MAX_TRACKS];
+   Short_t         trkncosmictags_flashmatch_pandoraTrack[MAX_TRACKS];
+   Float_t         trkcosmicscore_flashmatch_pandoraTrack[MAX_TRACKS];
+   Short_t         trkcosmictype_flashmatch_pandoraTrack[MAX_TRACKS];
+   Float_t         trkke_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkrange_pandoraTrack[MAX_TRACKS][3];
+   Int_t           trkidtruth_pandoraTrack[MAX_TRACKS][3];
+   Short_t         trkorigin_pandoraTrack[MAX_TRACKS][3];
+   Int_t           trkpdgtruth_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkefftruth_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkpurtruth_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkpitchc_pandoraTrack[MAX_TRACKS][3];
+   Short_t         ntrkhits_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkdedx_pandoraTrack[MAX_TRACKS][3][2000];
+   Float_t         trkdqdx_pandoraTrack[MAX_TRACKS][3][2000];
+   Float_t         trkresrg_pandoraTrack[MAX_TRACKS][3][2000];
+   Int_t           trktpc_pandoraTrack[MAX_TRACKS][3][2000];
+   Float_t         trkxyz_pandoraTrack[MAX_TRACKS][3][2000][3];
+   Float_t         trkstartx_pandoraTrack[MAX_TRACKS];
+   Float_t         trkstarty_pandoraTrack[MAX_TRACKS];
+   Float_t         trkstartz_pandoraTrack[MAX_TRACKS];
+   Float_t         trkstartd_pandoraTrack[MAX_TRACKS];
+   Float_t         trkendx_pandoraTrack[MAX_TRACKS];
+   Float_t         trkendy_pandoraTrack[MAX_TRACKS];
+   Float_t         trkendz_pandoraTrack[MAX_TRACKS];
+   Float_t         trkendd_pandoraTrack[MAX_TRACKS];
+   Float_t         trkflashT0_pandoraTrack[MAX_TRACKS];
+   Float_t         trktrueT0_pandoraTrack[MAX_TRACKS];
+   Int_t           trkg4id_pandoraTrack[MAX_TRACKS];
+   Int_t           trkorig_pandoraTrack[MAX_TRACKS];
+   Float_t         trkpurity_pandoraTrack[MAX_TRACKS];
+   Float_t         trkcompleteness_pandoraTrack[MAX_TRACKS];
+   Float_t         trktheta_pandoraTrack[MAX_TRACKS];
+   Float_t         trkphi_pandoraTrack[MAX_TRACKS];
+   Float_t         trkstartdcosx_pandoraTrack[MAX_TRACKS];
+   Float_t         trkstartdcosy_pandoraTrack[MAX_TRACKS];
+   Float_t         trkstartdcosz_pandoraTrack[MAX_TRACKS];
+   Float_t         trkenddcosx_pandoraTrack[MAX_TRACKS];
+   Float_t         trkenddcosy_pandoraTrack[MAX_TRACKS];
+   Float_t         trkenddcosz_pandoraTrack[MAX_TRACKS];
+   Float_t         trkthetaxz_pandoraTrack[MAX_TRACKS];
+   Float_t         trkthetayz_pandoraTrack[MAX_TRACKS];
+   Float_t         trkmom_pandoraTrack[MAX_TRACKS];
+   Float_t         trkmomrange_pandoraTrack[MAX_TRACKS];
+   Float_t         trkmommschi2_pandoraTrack[MAX_TRACKS];
+   Float_t         trkmommsllhd_pandoraTrack[MAX_TRACKS];
+   Float_t         trklen_pandoraTrack[MAX_TRACKS];
+   Short_t         trksvtxid_pandoraTrack[MAX_TRACKS];
+   Short_t         trkevtxid_pandoraTrack[MAX_TRACKS];
+   Float_t         trkpidmvamu_pandoraTrack[MAX_TRACKS];
+   Float_t         trkpidmvae_pandoraTrack[MAX_TRACKS];
+   Float_t         trkpidmvapich_pandoraTrack[MAX_TRACKS];
+   Float_t         trkpidmvaphoton_pandoraTrack[MAX_TRACKS];
+   Float_t         trkpidmvapr_pandoraTrack[MAX_TRACKS];
+   Int_t           trkpidpdg_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkpidchi_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkpidchipr_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkpidchika_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkpidchipi_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkpidchimu_pandoraTrack[MAX_TRACKS][3];
+   Float_t         trkpidpida_pandoraTrack[MAX_TRACKS][3];
+   Short_t         trkpidbestplane_pandoraTrack[MAX_TRACKS];
+   Short_t         trkhasPFParticle_pandoraTrack[MAX_TRACKS];
+   Short_t         trkPFParticleID_pandoraTrack[MAX_TRACKS];
    Short_t         ntracks_pmtrajfit;
-   Short_t         trkId_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trkncosmictags_tagger_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkcosmicscore_tagger_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trkcosmictype_tagger_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trkncosmictags_containmenttagger_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkcosmicscore_containmenttagger_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trkcosmictype_containmenttagger_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trkncosmictags_flashmatch_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkcosmicscore_flashmatch_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trkcosmictype_flashmatch_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkke_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkrange_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Int_t           trkidtruth_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Short_t         trkorigin_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Int_t           trkpdgtruth_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkefftruth_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkpurtruth_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkpitchc_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Short_t         ntrkhits_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkdedx_pmtrajfit[54][3][2000];   //[ntracks_pmtrajfit]
-   Float_t         trkdqdx_pmtrajfit[54][3][2000];   //[ntracks_pmtrajfit]
-   Float_t         trkresrg_pmtrajfit[54][3][2000];   //[ntracks_pmtrajfit]
-   Int_t           trktpc_pmtrajfit[54][3][2000];   //[ntracks_pmtrajfit]
-   Float_t         trkxyz_pmtrajfit[54][3][2000][3];   //[ntracks_pmtrajfit]
-   Float_t         trkstartx_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkstarty_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkstartz_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkstartd_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkendx_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkendy_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkendz_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkendd_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkflashT0_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trktrueT0_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Int_t           trkg4id_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Int_t           trkorig_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkpurity_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkcompleteness_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trktheta_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkphi_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkstartdcosx_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkstartdcosy_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkstartdcosz_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkenddcosx_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkenddcosy_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkenddcosz_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkthetaxz_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkthetayz_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkmom_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkmomrange_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkmommschi2_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkmommsllhd_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trklen_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trksvtxid_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trkevtxid_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkpidmvamu_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkpidmvae_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkpidmvapich_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkpidmvaphoton_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Float_t         trkpidmvapr_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Int_t           trkpidpdg_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkpidchi_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkpidchipr_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkpidchika_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkpidchipi_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkpidchimu_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Float_t         trkpidpida_pmtrajfit[54][3];   //[ntracks_pmtrajfit]
-   Short_t         trkpidbestplane_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trkhasPFParticle_pmtrajfit[54];   //[ntracks_pmtrajfit]
-   Short_t         trkPFParticleID_pmtrajfit[54];   //[ntracks_pmtrajfit]
+   Short_t         trkId_pmtrajfit[MAX_TRACKS];
+   Short_t         trkncosmictags_tagger_pmtrajfit[MAX_TRACKS];
+   Float_t         trkcosmicscore_tagger_pmtrajfit[MAX_TRACKS];
+   Short_t         trkcosmictype_tagger_pmtrajfit[MAX_TRACKS];
+   Short_t         trkncosmictags_containmenttagger_pmtrajfit[MAX_TRACKS];
+   Float_t         trkcosmicscore_containmenttagger_pmtrajfit[MAX_TRACKS];
+   Short_t         trkcosmictype_containmenttagger_pmtrajfit[MAX_TRACKS];
+   Short_t         trkncosmictags_flashmatch_pmtrajfit[MAX_TRACKS];
+   Float_t         trkcosmicscore_flashmatch_pmtrajfit[MAX_TRACKS];
+   Short_t         trkcosmictype_flashmatch_pmtrajfit[MAX_TRACKS];
+   Float_t         trkke_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkrange_pmtrajfit[MAX_TRACKS][3];
+   Int_t           trkidtruth_pmtrajfit[MAX_TRACKS][3];
+   Short_t         trkorigin_pmtrajfit[MAX_TRACKS][3];
+   Int_t           trkpdgtruth_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkefftruth_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkpurtruth_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkpitchc_pmtrajfit[MAX_TRACKS][3];
+   Short_t         ntrkhits_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkdedx_pmtrajfit[MAX_TRACKS][3][2000];
+   Float_t         trkdqdx_pmtrajfit[MAX_TRACKS][3][2000];
+   Float_t         trkresrg_pmtrajfit[MAX_TRACKS][3][2000];
+   Int_t           trktpc_pmtrajfit[MAX_TRACKS][3][2000];
+   Float_t         trkxyz_pmtrajfit[MAX_TRACKS][3][2000][3];
+   Float_t         trkstartx_pmtrajfit[MAX_TRACKS];
+   Float_t         trkstarty_pmtrajfit[MAX_TRACKS];
+   Float_t         trkstartz_pmtrajfit[MAX_TRACKS];
+   Float_t         trkstartd_pmtrajfit[MAX_TRACKS];
+   Float_t         trkendx_pmtrajfit[MAX_TRACKS];
+   Float_t         trkendy_pmtrajfit[MAX_TRACKS];
+   Float_t         trkendz_pmtrajfit[MAX_TRACKS];
+   Float_t         trkendd_pmtrajfit[MAX_TRACKS];
+   Float_t         trkflashT0_pmtrajfit[MAX_TRACKS];
+   Float_t         trktrueT0_pmtrajfit[MAX_TRACKS];
+   Int_t           trkg4id_pmtrajfit[MAX_TRACKS];
+   Int_t           trkorig_pmtrajfit[MAX_TRACKS];
+   Float_t         trkpurity_pmtrajfit[MAX_TRACKS];
+   Float_t         trkcompleteness_pmtrajfit[MAX_TRACKS];
+   Float_t         trktheta_pmtrajfit[MAX_TRACKS];
+   Float_t         trkphi_pmtrajfit[MAX_TRACKS];
+   Float_t         trkstartdcosx_pmtrajfit[MAX_TRACKS];
+   Float_t         trkstartdcosy_pmtrajfit[MAX_TRACKS];
+   Float_t         trkstartdcosz_pmtrajfit[MAX_TRACKS];
+   Float_t         trkenddcosx_pmtrajfit[MAX_TRACKS];
+   Float_t         trkenddcosy_pmtrajfit[MAX_TRACKS];
+   Float_t         trkenddcosz_pmtrajfit[MAX_TRACKS];
+   Float_t         trkthetaxz_pmtrajfit[MAX_TRACKS];
+   Float_t         trkthetayz_pmtrajfit[MAX_TRACKS];
+   Float_t         trkmom_pmtrajfit[MAX_TRACKS];
+   Float_t         trkmomrange_pmtrajfit[MAX_TRACKS];
+   Float_t         trkmommschi2_pmtrajfit[MAX_TRACKS];
+   Float_t         trkmommsllhd_pmtrajfit[MAX_TRACKS];
+   Float_t         trklen_pmtrajfit[MAX_TRACKS];
+   Short_t         trksvtxid_pmtrajfit[MAX_TRACKS];
+   Short_t         trkevtxid_pmtrajfit[MAX_TRACKS];
+   Float_t         trkpidmvamu_pmtrajfit[MAX_TRACKS];
+   Float_t         trkpidmvae_pmtrajfit[MAX_TRACKS];
+   Float_t         trkpidmvapich_pmtrajfit[MAX_TRACKS];
+   Float_t         trkpidmvaphoton_pmtrajfit[MAX_TRACKS];
+   Float_t         trkpidmvapr_pmtrajfit[MAX_TRACKS];
+   Int_t           trkpidpdg_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkpidchi_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkpidchipr_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkpidchika_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkpidchipi_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkpidchimu_pmtrajfit[MAX_TRACKS][3];
+   Float_t         trkpidpida_pmtrajfit[MAX_TRACKS][3];
+   Short_t         trkpidbestplane_pmtrajfit[MAX_TRACKS];
+   Short_t         trkhasPFParticle_pmtrajfit[MAX_TRACKS];
+   Short_t         trkPFParticleID_pmtrajfit[MAX_TRACKS];
    Short_t         nvtx_linecluster;
-   Short_t         vtxId_linecluster[7];   //[nvtx_linecluster]
-   Float_t         vtxx_linecluster[7];   //[nvtx_linecluster]
-   Float_t         vtxy_linecluster[7];   //[nvtx_linecluster]
-   Float_t         vtxz_linecluster[7];   //[nvtx_linecluster]
-   Short_t         vtxhasPFParticle_linecluster[7];   //[nvtx_linecluster]
-   Short_t         vtxPFParticleID_linecluster[7];   //[nvtx_linecluster]
+   Short_t         vtxId_linecluster[MAX_VERTICES];
+   Float_t         vtxx_linecluster[MAX_VERTICES];
+   Float_t         vtxy_linecluster[MAX_VERTICES];
+   Float_t         vtxz_linecluster[MAX_VERTICES];
+   Short_t         vtxhasPFParticle_linecluster[MAX_VERTICES];
+   Short_t         vtxPFParticleID_linecluster[MAX_VERTICES];
    Short_t         nvtx_pmtrack;
-   Short_t         vtxId_pmtrack[893];   //[nvtx_pmtrack]
-   Float_t         vtxx_pmtrack[893];   //[nvtx_pmtrack]
-   Float_t         vtxy_pmtrack[893];   //[nvtx_pmtrack]
-   Float_t         vtxz_pmtrack[893];   //[nvtx_pmtrack]
-   Short_t         vtxhasPFParticle_pmtrack[893];   //[nvtx_pmtrack]
-   Short_t         vtxPFParticleID_pmtrack[893];   //[nvtx_pmtrack]
+   Short_t         vtxId_pmtrack[MAX_VERTICES];
+   Float_t         vtxx_pmtrack[MAX_VERTICES];
+   Float_t         vtxy_pmtrack[MAX_VERTICES];
+   Float_t         vtxz_pmtrack[MAX_VERTICES];
+   Short_t         vtxhasPFParticle_pmtrack[MAX_VERTICES];
+   Short_t         vtxPFParticleID_pmtrack[MAX_VERTICES];
    Short_t         nvtx_pandora;
-   Short_t         vtxId_pandora[36];   //[nvtx_pandora]
-   Float_t         vtxx_pandora[36];   //[nvtx_pandora]
-   Float_t         vtxy_pandora[36];   //[nvtx_pandora]
-   Float_t         vtxz_pandora[36];   //[nvtx_pandora]
-   Short_t         vtxhasPFParticle_pandora[36];   //[nvtx_pandora]
-   Short_t         vtxPFParticleID_pandora[36];   //[nvtx_pandora]
+   Short_t         vtxId_pandora[MAX_VERTICES];
+   Float_t         vtxx_pandora[MAX_VERTICES];
+   Float_t         vtxy_pandora[MAX_VERTICES];
+   Float_t         vtxz_pandora[MAX_VERTICES];
+   Short_t         vtxhasPFParticle_pandora[MAX_VERTICES];
+   Short_t         vtxPFParticleID_pandora[MAX_VERTICES];
 
    // List of branches
    TBranch        *b_run;   //!
@@ -1094,16 +1105,16 @@ public :
 #endif
 
 #ifdef anatree_cxx
-anatree::anatree(TTree *tree) : fChain(0) 
+anatree::anatree(TTree *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("data/largeprod/MUSUN_dunefd_merged_gen_g4_detsim_reco_ana.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("data/kumar/20002100/20002100/MUSUN_dunefd_20002100_gen_g4_detsim_reco_ana.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("data/largeprod/MUSUN_dunefd_merged_gen_g4_detsim_reco_ana.root");
+         f = new TFile("data/kumar/20002100/20002100/MUSUN_dunefd_20002100_gen_g4_detsim_reco_ana.root");
       }
-      TDirectory * dir = (TDirectory*)f->Get("data/largeprod/MUSUN_dunefd_merged_gen_g4_detsim_reco_ana.root:/analysistree");
+      TDirectory * dir = (TDirectory*)f->Get("data/kumar/20002100/20002100/MUSUN_dunefd_20002100_gen_g4_detsim_reco_ana.root:/analysistree");
       dir->GetObject("anatree",tree);
 
    }
