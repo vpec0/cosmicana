@@ -27,6 +27,8 @@ public :
    Int_t           Event;
    Int_t           Run;
    Int_t           SubRun;
+   Double_t        genPos[4];
+   Double_t        genMom[4];
    Double_t        startPos[4];
    Double_t        endPos[4];
    Double_t        startMom[4];
@@ -43,6 +45,8 @@ public :
    TBranch        *b_Event;   //!
    TBranch        *b_Run;   //!
    TBranch        *b_SubRun;   //!
+   TBranch        *b_genPos;   //!
+   TBranch        *b_genMom;   //!
    TBranch        *b_startPos;   //!
    TBranch        *b_endPos;   //!
    TBranch        *b_startMom;   //!
@@ -129,6 +133,8 @@ void CosmicAna::Init(TTree *tree)
    fChain->SetBranchAddress("Event", &Event, &b_Event);
    fChain->SetBranchAddress("Run", &Run, &b_Run);
    fChain->SetBranchAddress("SubRun", &SubRun, &b_SubRun);
+   fChain->SetBranchAddress("genPos", genPos, &b_genPos);
+   fChain->SetBranchAddress("genMom", genMom, &b_genMom);
    fChain->SetBranchAddress("startPos", startPos, &b_startPos);
    fChain->SetBranchAddress("endPos", endPos, &b_endPos);
    fChain->SetBranchAddress("startMom", startMom, &b_startMom);
