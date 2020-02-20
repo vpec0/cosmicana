@@ -282,8 +282,8 @@ void CosmicAna::analyze(art::Event const& e)
 	fMuon.exited = exited;
 
 
-	std::cout<<"Particle process: "<< particle.Process()<<std::endl;
-	std::cout<<"Particle end process: "<< particle.EndProcess()<<std::endl;
+	// std::cout<<"Particle process: "<< particle.Process()<<std::endl;
+	// std::cout<<"Particle end process: "<< particle.EndProcess()<<std::endl;
 
 	it--; // return to the last inside position of the trajectory
 	it->first.GetXYZT(fMuon.endPos);
@@ -294,10 +294,10 @@ void CosmicAna::analyze(art::Event const& e)
 	fLengthHist->Fill(len);
     }
 
-    std::cout<<"Event: "<<fEvent<<" Run: "<<fRun<<" SubRun: "<<fSubRun<<std::endl
-	     <<"Total number of primary muons: "<<total_muons<<std::endl
-	     <<"Of which only "<<tpc_crossers<<" entered the TPC"<<std::endl
-	     <<"Out of "<<particleHandle->size()<<" simulated particles"<<std::endl;
+    // std::cout<<"Event: "<<fEvent<<" Run: "<<fRun<<" SubRun: "<<fSubRun<<std::endl
+    // 	     <<"Total number of primary muons: "<<total_muons<<std::endl
+    // 	     <<"Of which only "<<tpc_crossers<<" entered the TPC"<<std::endl
+    // 	     <<"Out of "<<particleHandle->size()<<" simulated particles"<<std::endl;
 }
 
 bool CosmicAna::insideTPC(const TVector3& pos)
