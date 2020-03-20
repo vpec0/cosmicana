@@ -21,7 +21,7 @@ const int MAX_VERTICES = 100;
 const int MAX_CLUSTERS = 10000;
 const int MAX_MCEVTS = 10;
 const int MAX_GENIE_PRIMARIES = 10;
-const int MAX_G4_PARTICLES = 100000;
+const int MAX_G4_PARTICLES = 250000;
 const int MAX_SHOWERS = 100;
 const int MAX_TRACKS = 5000;
 
