@@ -12,6 +12,7 @@
 #include "CosmicMuonEvent.h"
 
 void attachFiles(TChain* tree, const char* fname, int batchNo, int Nruns);
+void crossingAPACPA(TVector3 start, TVector3 end, Int_t& napa, Int_t* apa, Int_t& ncpa, Int_t* cpa);
 
 
 
@@ -91,7 +92,7 @@ void process_reco_eff(const char* fname = "", const char* outpref = "", int batc
 
     int entries_processed = 0;
 
-    //size = 50000;
+    //size = 20;
     cout<<"|                                                  |\r|";
     for (int ientry = 0; ientry < size; ++ientry) {
 	// print progress
@@ -129,6 +130,16 @@ void process_reco_eff(const char* fname = "", const char* outpref = "", int batc
 	outevt->StartP_tpcAV = evt->StartP_tpcAV[0];
 
 	outevt->pathlen = evt->pathlen[0];
+
+	// cout<<"x1 = "<<evt->StartPointx_tpcAV[0]
+	//     <<", x2 = "<<evt->EndPointx_tpcAV[0]<<endl;
+
+	// find and store all APA and CPA crossed
+	TVector3 start(evt->StartPointx_tpcAV[0],evt->StartPointy_tpcAV[0],evt->StartPointz_tpcAV[0]);
+	TVector3 end(evt->EndPointx_tpcAV[0],evt->EndPointy_tpcAV[0],evt->EndPointz_tpcAV[0]);
+	crossingAPACPA(start, end,
+		       outevt->nApa, outevt->Apa,
+		       outevt->nCpa, outevt->Cpa);
 
 	// store data of reconstructed tracks
 #undef INT
@@ -188,7 +199,7 @@ void process_reco_eff(const char* fname = "", const char* outpref = "", int batc
 void attachFiles(TChain* tree, const char* fname, int batchNo, int Nruns) {
     if (!strcmp(fname, "")) { // no input given
 	cout<<"Will try to add "<<Nruns<<" production files from batch "
-	    <<batchNo<<" to the chain (unchecked)."<<endl;
+	    <<batchNo<<" to the chain."<<endl;
 	TString batch = Form("2000%02d", batchNo);
 	TString topdir = "/data/kumar/dune/cosmic/largeproduction/data/";
 	topdir += batch + "00/";
@@ -198,7 +209,7 @@ void attachFiles(TChain* tree, const char* fname, int batchNo, int Nruns) {
 		     j, j);
 	    if (gSystem->AccessPathName(fullname))
 		continue;
-	    int status = tree->Add(fullname, 500);
+	    int status = tree->Add(fullname, -1);
 	}
 	cout<<tree->GetNtrees()<<" files added."<<endl;
     } else { // input given
@@ -209,5 +220,66 @@ void attachFiles(TChain* tree, const char* fname, int batchNo, int Nruns) {
 	    status = tree->Add(fname, -1);
 	}
 	cout<<"Status: "<<status<<endl;
+    }
+}
+
+void crossingAPACPA(const TVector3 start, const TVector3 end, Int_t& napa, Int_t* apa, Int_t& ncpa, Int_t* cpa)
+{
+    double ay, by, az, bz, x1, x2, y1, y2, z1, z2;
+
+    x1 = start.X();
+    x2 = end.X();
+    y1 = start.Y();
+    y2 = end.Y();
+    z1 = start.Z();
+    z2 = end.Z();
+
+    ay = (y1-y2)/(x1-x2);
+    az = (z1-z2)/(x1-x2);
+
+    by = y1 - ay*x1;
+    bz = z1 - az*x1;
+
+    int iapa = -1;
+    for (auto xapa: CosmicMuonEvent::APA_X_POSITIONS) {
+	++iapa;
+	if ( (xapa < x1 && xapa < x2) || (xapa > x2 && xapa > x1) )
+	    continue; // not crossing this APA section
+
+	// get y and z coordinate of the crossing
+	double yapa = ay * xapa + by;
+	double zapa = az * xapa + bz;
+
+	// cout<<"Testing APA "<<iapa<<" at "<<xapa<<" cm, "
+	//     <<"x1 = "<<x1<<", x2 = "<<x2<<endl;
+	// cout<<"APA crossed at ";
+	// cout<<Form("(%.1f,%.1f,%.1f)", xapa, yapa, zapa)<<endl;
+
+	// get the APA number
+	int apanum = int(zapa / CosmicMuonEvent::TPC_Z_SIZE) * 6 + (yapa>0.)*3 + iapa;
+
+	apa[napa] = apanum;
+	++napa;
+    }
+
+    int icpa = 0;
+    for (auto xcpa: CosmicMuonEvent::CPA_X_POSITIONS) {
+	++icpa;
+
+	if ( (xcpa < x1 && xcpa < x2) || (xcpa > x2 && xcpa > x1) )
+	    continue; // not crossing this CPA section
+	// get y and z coordinate of the crossing
+	double ycpa = ay * xcpa + by;
+	double zcpa = az * xcpa + bz;
+
+	// cout<<"Testing CPA "<<icpa<<" at "<<xcpa<<" cm"<<endl;
+	// cout<<"CPA crossed at ";
+	// cout<<Form("(%.1f,%.1f,%.1f)", xcpa, ycpa, zcpa)<<endl;
+
+	// get the CPA number
+	int cpanum = int(zcpa / CosmicMuonEvent::TPC_Z_SIZE) * 4 + (ycpa>0.)*2 + icpa;
+
+	cpa[ncpa] = cpanum;
+	++ncpa;
     }
 }
