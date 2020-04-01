@@ -1,3 +1,9 @@
+/**
+ * Plots histograms created by process_ana_basic.C
+ *
+ *
+ **/
+
 void saveAnaBasicHists(const char* fname, const char* outpref)
 {
     gROOT->ForceStyle(1);
