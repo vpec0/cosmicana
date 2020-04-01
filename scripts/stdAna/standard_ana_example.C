@@ -24,30 +24,7 @@
 
 #include "anatree.h"
 
-void attachFiles(TChain* tree, const char* fname, int batchNo, int Nruns) {
-     if (!strcmp(fname, "")) { // no input given
-	cout<<"Will add production files from batch "
-	    <<batchNo<<" to the chain (unchecked)."<<endl;
-	TString batch = Form("2000%02d", batchNo);
-	TString topdir = "/data/kumar/dune/cosmic/largeproduction/data/";
-	topdir += batch + "00/";
-	for (int j = 0; j<Nruns; j++) {
-	    TString fname = topdir +
-		Form(batch + "%02d/MUSUN_dunefd_" + batch + "%02d_gen_g4_detsim_reco_ana.root",
-		     j, j);
-	    int status = tree->Add(fname, 500);
-	}
-    } else { // input given
-	cout<<"Adding "<<fname<<" to the chain."<<endl;
-	int status = tree->Add(fname, -1);
-	if (!status) { // try to look in the base dir
-	    tree->SetName("anatree");
-	    status = tree->Add(fname, -1);
-	}
-	cout<<"Status: "<<status<<endl;
-    }
-}
-
+#include "common.icc"
 
 void standard_ana_example(const char* fname, const char* outpref, int batchNo = 21, int Nruns = 10)
 {
