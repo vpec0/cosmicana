@@ -1,3 +1,5 @@
+#ifndef COSMICMUONEVENT_H
+#define COSMICMUONEVENT_H
 /**
  * APA positions:
  * $ cat dune10kt_v1_nowires.gdml |grep -A3 "<physvol>" |grep -A1 'posAPAFrameYSideNeg' |grep "x="
@@ -124,3 +126,4 @@ namespace CosmicMuonEvent {
 	return tree;
     }
 }
+#endif
