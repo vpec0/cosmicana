@@ -31,6 +31,8 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
 	Path_secondary,
 	Eloss,
 	Eloss_logx,
+	Elosspath,
+	Elosspath_logx,
 	EMichel_all,
 	EMichel_primary,
 	Epi0,
@@ -71,6 +73,10 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
     H1(Eloss, "Energy loss of primary muons in TPC;Energy [GeV]", 1300, 0, 1300);
     H1(Eloss_logx, "Energy loss of primary muons in TPC;Energy [GeV];[GeV^{-1}]", 200, 0.1, 1e4);
     doXlog(hists[Eloss_logx]);
+
+    H1(Elosspath, "Energy loss/path length for primary muons in TPC;dE/dx [MeV/cm]", 1300, 0, 1300);
+    H1(Elosspath_logx, "Energy loss/path length for primary muons in TPC;dE/dx [MeV/cm];[(MeV/cm)^{-1}]", 200, 0.1, 1e4);
+    doXlog(hists[Elosspath_logx]);
 
     H1(EMichel_all, "Energy of all Michel electrons in TPC;Energy [MeV]", 1000, 0, 100);
     H1(EMichel_primary, "Energy of Michel electrons from primary muon in TPC;Energy [MeV]", 1000, 0, 100);
@@ -221,8 +227,12 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
 
 	    hists[Path_primary]->Fill(evt->pathlen[0] * 0.01); // convert to metres
 
-	    hists[Eloss]->Fill(evt->StartE_tpcAV[0] - evt->EndE_tpcAV[0]);
-	    hists[Eloss_logx]->Fill(evt->StartE_tpcAV[0] - evt->EndE_tpcAV[0]);
+	    double eloss = evt->StartE_tpcAV[0] - evt->EndE_tpcAV[0];
+	    hists[Eloss]->Fill(eloss);
+	    hists[Eloss_logx]->Fill(eloss);
+	    eloss *= 1e3 / evt->pathlen[0];
+	    hists[Elosspath]->Fill(eloss);
+	    hists[Elosspath_logx]->Fill(eloss);
 
 	    // angular distro
 	    // wherefrom muon arrives, azimuthal angle from Z axis, counterclockwise
