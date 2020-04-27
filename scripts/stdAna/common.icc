@@ -1,3 +1,5 @@
+#include "CosmicMuonEvent.h"
+
 
 void doXlog(TH1* h)
 // redo scales for x-log hists
@@ -42,5 +44,69 @@ void attachFiles(TChain* tree, const char* fname, int batchNo, int Nruns) {
 	    status = tree->Add(fname, -1);
 	}
 	cout<<"Status: "<<status<<endl;
+    }
+}
+
+
+void crossingAPACPA(const TVector3& start, const TVector3& end, Int_t& napa, Int_t* apa, Int_t& ncpa, Int_t* cpa)
+{
+    double ay, by, az, bz, x1, x2, y1, y2, z1, z2;
+
+    x1 = start.X();
+    x2 = end.X();
+    y1 = start.Y();
+    y2 = end.Y();
+    z1 = start.Z();
+    z2 = end.Z();
+
+    ay = (y1-y2)/(x1-x2);
+    az = (z1-z2)/(x1-x2);
+
+    by = y1 - ay*x1;
+    bz = z1 - az*x1;
+
+    int iapa = -1;
+    napa = 0;
+    ncpa = 0;
+    for (auto xapa: CosmicMuonEvent::APA_X_POSITIONS) {
+	++iapa;
+	if ( (xapa < x1 && xapa < x2) || (xapa > x2 && xapa > x1) )
+	    continue; // not crossing this APA section
+
+	// get y and z coordinate of the crossing
+	double yapa = ay * xapa + by;
+	double zapa = az * xapa + bz;
+
+	// cout<<"Testing APA "<<iapa<<" at "<<xapa<<" cm, "
+	//     <<"x1 = "<<x1<<", x2 = "<<x2<<endl;
+	// cout<<"APA crossed at ";
+	// cout<<Form("(%.1f,%.1f,%.1f)", xapa, yapa, zapa)<<endl;
+
+	// get the APA number
+	int apanum = int(zapa / CosmicMuonEvent::TPC_Z_SIZE) * 6 + (yapa>0.)*3 + iapa;
+
+	apa[napa] = apanum;
+	++napa;
+    }
+
+    int icpa = 0;
+    for (auto xcpa: CosmicMuonEvent::CPA_X_POSITIONS) {
+	++icpa;
+
+	if ( (xcpa < x1 && xcpa < x2) || (xcpa > x2 && xcpa > x1) )
+	    continue; // not crossing this CPA section
+	// get y and z coordinate of the crossing
+	double ycpa = ay * xcpa + by;
+	double zcpa = az * xcpa + bz;
+
+	// cout<<"Testing CPA "<<icpa<<" at "<<xcpa<<" cm"<<endl;
+	// cout<<"CPA crossed at ";
+	// cout<<Form("(%.1f,%.1f,%.1f)", xcpa, ycpa, zcpa)<<endl;
+
+	// get the CPA number
+	int cpanum = int(zcpa / CosmicMuonEvent::TPC_Z_SIZE) * 4 + (ycpa>0.)*2 + icpa;
+
+	cpa[ncpa] = cpanum;
+	++ncpa;
     }
 }
