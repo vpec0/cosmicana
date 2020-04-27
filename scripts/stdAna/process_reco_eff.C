@@ -16,9 +16,7 @@
 #include "anatree.h"
 #include "CosmicMuonEvent.h"
 
-void attachFiles(TChain* tree, const char* fname, int batchNo, int Nruns);
-void crossingAPACPA(TVector3 start, TVector3 end, Int_t& napa, Int_t* apa, Int_t& ncpa, Int_t* cpa);
-
+#include "common.icc"
 
 
 void process_reco_eff(const char* fname = "", const char* outpref = "", int batchNo = 21, int Nruns = 10)
@@ -197,94 +195,4 @@ void process_reco_eff(const char* fname = "", const char* outpref = "", int batc
     outtree->Write("",TObject::kOverwrite);
     outf->Close();
     cout<<"Saved and closed output file"<<endl;
-}
-
-
-
-void attachFiles(TChain* tree, const char* fname, int batchNo, int Nruns) {
-    if (!strcmp(fname, "")) { // no input given
-	cout<<"Will try to add "<<Nruns<<" production files from batch "
-	    <<batchNo<<" to the chain."<<endl;
-	TString batch = Form("2000%02d", batchNo);
-	TString topdir = "/data/kumar/dune/cosmic/largeproduction/data/";
-	topdir += batch + "00/";
-	for (int j = 0; j<Nruns; j++) {
-	    TString fullname = topdir +
-		Form(batch + "%02d/MUSUN_dunefd_" + batch + "%02d_gen_g4_detsim_reco_ana.root",
-		     j, j);
-	    if (gSystem->AccessPathName(fullname))
-		continue;
-	    int status = tree->Add(fullname, -1);
-	}
-	cout<<tree->GetNtrees()<<" files added."<<endl;
-    } else { // input given
-	cout<<"Adding "<<fname<<" to the chain."<<endl;
-	int status = tree->Add(fname, -1);
-	if (!status) { // try to look in the base dir
-	    tree->SetName("anatree");
-	    status = tree->Add(fname, -1);
-	}
-	cout<<"Status: "<<status<<endl;
-    }
-}
-
-void crossingAPACPA(const TVector3 start, const TVector3 end, Int_t& napa, Int_t* apa, Int_t& ncpa, Int_t* cpa)
-{
-    double ay, by, az, bz, x1, x2, y1, y2, z1, z2;
-
-    x1 = start.X();
-    x2 = end.X();
-    y1 = start.Y();
-    y2 = end.Y();
-    z1 = start.Z();
-    z2 = end.Z();
-
-    ay = (y1-y2)/(x1-x2);
-    az = (z1-z2)/(x1-x2);
-
-    by = y1 - ay*x1;
-    bz = z1 - az*x1;
-
-    int iapa = -1;
-    for (auto xapa: CosmicMuonEvent::APA_X_POSITIONS) {
-	++iapa;
-	if ( (xapa < x1 && xapa < x2) || (xapa > x2 && xapa > x1) )
-	    continue; // not crossing this APA section
-
-	// get y and z coordinate of the crossing
-	double yapa = ay * xapa + by;
-	double zapa = az * xapa + bz;
-
-	// cout<<"Testing APA "<<iapa<<" at "<<xapa<<" cm, "
-	//     <<"x1 = "<<x1<<", x2 = "<<x2<<endl;
-	// cout<<"APA crossed at ";
-	// cout<<Form("(%.1f,%.1f,%.1f)", xapa, yapa, zapa)<<endl;
-
-	// get the APA number
-	int apanum = int(zapa / CosmicMuonEvent::TPC_Z_SIZE) * 6 + (yapa>0.)*3 + iapa;
-
-	apa[napa] = apanum;
-	++napa;
-    }
-
-    int icpa = 0;
-    for (auto xcpa: CosmicMuonEvent::CPA_X_POSITIONS) {
-	++icpa;
-
-	if ( (xcpa < x1 && xcpa < x2) || (xcpa > x2 && xcpa > x1) )
-	    continue; // not crossing this CPA section
-	// get y and z coordinate of the crossing
-	double ycpa = ay * xcpa + by;
-	double zcpa = az * xcpa + bz;
-
-	// cout<<"Testing CPA "<<icpa<<" at "<<xcpa<<" cm"<<endl;
-	// cout<<"CPA crossed at ";
-	// cout<<Form("(%.1f,%.1f,%.1f)", xcpa, ycpa, zcpa)<<endl;
-
-	// get the CPA number
-	int cpanum = int(zcpa / CosmicMuonEvent::TPC_Z_SIZE) * 4 + (ycpa>0.)*2 + icpa;
-
-	cpa[ncpa] = cpanum;
-	++ncpa;
-    }
 }
