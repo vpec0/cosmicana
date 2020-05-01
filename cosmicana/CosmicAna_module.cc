@@ -14,6 +14,7 @@
 #include "art/Framework/Principal/Run.h"
 #include "art/Framework/Principal/SubRun.h"
 #include "canvas/Utilities/InputTag.h"
+#include "canvas/Persistency/Common/FindManyP.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "larcore/Geometry/Geometry.h"
@@ -24,6 +25,11 @@
 
 #include "nusimdata/SimulationBase/MCParticle.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
+
+#include "lardataobj/RecoBase/Track.h"
+#include "lardataobj/RecoBase/TrackHitMeta.h"
+#include "lardataobj/RecoBase/Hit.h"
+#include "lardataobj/AnalysisBase/Calorimetry.h"
 
 #include "TMath.h"
 #include "TH1.h"
@@ -56,10 +62,16 @@ private:
     bool insideTPC(const TVector3& pos);
     void GetTPClimits();
 
+    void analyzeMC(art::Event const& e);
+    void analyzeReco(art::Event const& e);
+
 private:
     // Declare member data here.
     // labels
     std::string fSimModuleLabel;
+    std::string fHitModuleLabel;
+    std::string fRecoTrackModuleLabel;
+    std::string fCaloModuleLabel;
 
 
     int fEvent;
@@ -71,7 +83,7 @@ private:
     TH1* fDedxVsY;
     TH1* fDedxVsZ;
 
-
+    /// Flat tree to store info of primary muon which enters TPC
     TTree* fTree;
 
     struct Muon_t {
@@ -109,7 +121,10 @@ private:
 CosmicAna::CosmicAna(fhicl::ParameterSet const& p)
   : EDAnalyzer{p},
   // More initializers here.
-    fSimModuleLabel   (p.get< std::string >("SimModuleLabel"))
+    fSimModuleLabel   (p.get< std::string >("SimModuleLabel")),
+    fHitModuleLabel  (p.get< std::string >("HitModuleLabel")),
+    fRecoTrackModuleLabel  (p.get< std::string >("RecoTrackModuleLabel")),
+    fCaloModuleLabel   (p.get< std::string >("CaloModuleLabel"))
 {
 
     // Get a pointer to the geometry service provider.
@@ -125,6 +140,11 @@ CosmicAna::CosmicAna(fhicl::ParameterSet const& p)
     consumes<std::vector<simb::MCParticle>>(fSimModuleLabel);
     // consumes<std::vector<sim::SimChannel>>(fSimulationProducerLabel);
     consumes<art::Assns<simb::MCTruth, simb::MCParticle>>(fSimModuleLabel);
+    consumes<std::vector<recob::Hit>>(fHitModuleLabel);
+    consumes<std::vector<recob::Track>>(fRecoTrackModuleLabel);
+    consumes<std::vector<anab::Calorimetry>>(fCaloModuleLabel);
+    consumes<art::Assns<recob::Track, anab::Calorimetry>>(fCaloModuleLabel);
+    consumes<art::Assns<recob::Track, recob::Hit>>(fRecoTrackModuleLabel);
     // consumes<std::vector<recob::Hit>>(fHitProducerLabel);
     // consumes<std::vector<recob::Cluster>>(fClusterProducerLabel);
     // consumes<art::Assns<recob::Cluster, recob::Hit>>(fHitProducerLabel);
@@ -174,6 +194,18 @@ void CosmicAna::analyze(art::Event const& e)
     fSubRun = e.subRun();
 
 
+    analyzeMC(e);
+    analyzeReco(e);
+
+
+    // std::cout<<"Event: "<<fEvent<<" Run: "<<fRun<<" SubRun: "<<fSubRun<<std::endl
+    // 	     <<"Total number of primary muons: "<<total_muons<<std::endl
+    // 	     <<"Of which only "<<tpc_crossers<<" entered the TPC"<<std::endl
+    // 	     <<"Out of "<<particleHandle->size()<<" simulated particles"<<std::endl;
+}
+
+void CosmicAna::analyzeMC(art::Event const& e)
+{
     art::Handle< std::vector<simb::MCParticle> > particleHandle;
     // Then tell the event to fill the vector with all the objects of
     // that type produced by a particular producer.
@@ -294,10 +326,134 @@ void CosmicAna::analyze(art::Event const& e)
 	fLengthHist->Fill(len);
     }
 
-    // std::cout<<"Event: "<<fEvent<<" Run: "<<fRun<<" SubRun: "<<fSubRun<<std::endl
-    // 	     <<"Total number of primary muons: "<<total_muons<<std::endl
-    // 	     <<"Of which only "<<tpc_crossers<<" entered the TPC"<<std::endl
-    // 	     <<"Out of "<<particleHandle->size()<<" simulated particles"<<std::endl;
+}
+
+using namespace std;
+
+void CosmicAna::analyzeReco(art::Event const& evt)
+{
+    // static const int int_max = std::numeric_limits<int>::max();
+
+    /// Retrieves reconstructed tracks
+    art::Handle< std::vector<recob::Track> >  trackListHandle;
+    std::vector<art::Ptr<recob::Track> > tracklist;
+
+    if ( evt.getByLabel(fRecoTrackModuleLabel, trackListHandle) )
+	art::fill_ptr_vector(tracklist, trackListHandle);
+
+    cout<<"Run "<<fRun<<" event "<<fEvent<<endl;
+    cout<<"Number of tracks: "<<tracklist.size()<<endl;
+
+
+
+    /// Get hits associated with the track
+    /// Prepare map for each track of hit's trajectory-point index and pointer to the hit
+    std::vector< std::map< size_t, art::Ptr<recob::Hit> > > vmtpi2h;
+
+    cout<<"Hits:"<<endl;
+    art::Handle< std::vector<recob::Hit> >  hitListHandle;
+    std::vector<art::Ptr<recob::Hit> > hitList;
+
+    if ( evt.getByLabel(fHitModuleLabel, hitListHandle) )
+	art::fill_ptr_vector(hitList, hitListHandle);
+    cout<<"Total hits stored: "
+	<<hitList.size()<<endl;
+
+
+
+    cout<<"Total hits in each track: ";
+    art::FindManyP<recob::Hit> fmth(trackListHandle, evt, fRecoTrackModuleLabel);
+    if (fmth.isValid()) {
+	for (size_t i = 0; i < fmth.size(); i++) {
+	    cout<<fmth.at(i).size()<<" ";
+	}
+    }
+    cout<<endl;
+
+    // art::FindManyP<recob::Hit, recob::TrackHitMeta> fmthm(trackListHandle, evt, fRecoTrackModuleLabel);
+    // if (fmthm.isValid()) {
+    // 	cout<<"Found hits for "<<fmthm.size()<<" tracks."<<endl;
+    // 	cout<<"Number of hits in each track: "<<endl;
+    // 	for (size_t i = 0; i < fmthm.size(); i++) {
+    // 	    vmtpi2h.push_back(std::map< size_t, art::Ptr<recob::Hit> >());
+    // 	    std::map< size_t, art::Ptr<recob::Hit> > &mtpi2h = vmtpi2h.back();
+
+    // 	    auto vhits = fmthm.at(i);
+    // 	    auto vmeta = fmthm.data(i);
+    // 	    cout<<vhits.size()<<endl;
+
+    // 	    size_t end = vhits.size();
+    // 	    for (size_t ihit = 0; ihit < end; ++ihit) {
+    // 		if (vmeta.at(ihit)->Index() == int_max) continue;
+    // 		mtpi2h[vmeta.at(ihit)->Index()] = vhits.at(ihit);
+    // 	    }
+    // 	}
+    // }
+
+
+
+    /// Get calorimetry for each track
+    art::FindManyP<anab::Calorimetry> fmcal(trackListHandle, evt, fCaloModuleLabel);
+    cout<<"Calorimetry:"<<endl;
+    if (fmcal.isValid()) {
+	cout<<"Found calorimetry for "<<fmcal.size()<<" tracks."<<endl;
+	cout<<"Number of calo points in each track: "<<endl;
+	for (size_t i = 0; i < fmcal.size(); i++) {
+	    auto calos = fmcal.at(i);
+	    cout<<"(";
+	    size_t total = 0;
+	    for (size_t iplane = 0; iplane <3; ++iplane) {
+		total += calos.at(iplane)->dEdx().size();
+		cout<<calos.at(iplane)->dEdx().size()<<",";
+	    }
+	    cout <<")"
+		 <<" Total "<<total<<endl;
+	    // cout<<"Number of hits associated to this tracks TPs: "
+	    // 	<<vmtpi2h[i].size()<<endl;
+	    cout<<"Number of TPs stored in this track: "
+		<<tracklist[i]->NPoints()<<endl;
+
+	    // cout<<"TP indices of associated hits: "<<endl;
+	    // for (auto hit_pair : vmtpi2h[i]) {
+	    // 	cout<<"("<<hit_pair.first<<", "
+	    // 	    <<hit_pair.second->WireID()<<") ";
+	    // }
+	    // cout<<endl;
+
+	    // cout<<"TP indices of calorimetry points: "<<endl;
+	    // for (auto calo : calos) {
+	    // 	cout<<calo->PlaneID()<<" ";
+	    // 	for (auto idx : calo->TpIndices()) {
+	    // 	    cout<<idx<<" ";
+	    // 	}
+	    // 	cout<<endl;
+	    // }
+	    // cout<<endl;
+
+
+	    cout<<"First 10 calopoints in each plane:"<<endl;
+	    for (auto calo : calos) {
+	    	size_t end = calo->TpIndices().size();
+	    	if (end > 10) end = 10;
+	    	if (end)
+	    	    cout<<"Plane "<<calo->PlaneID()<<": ";
+
+	    	for (size_t ipt = 0; ipt < end; ++ipt) {
+	    	    size_t tpidx = calo->TpIndices().at(ipt);
+	    	    auto hit = hitList[tpidx];
+		    float dqdx = calo->dQdx().at(ipt);
+		    float pitch = calo->TrkPitchVec().at(ipt);
+	    	    cout<<"("<<tpidx
+	    		<<", "<<(dqdx*pitch)
+	    		<<", "<<hit->WireID()
+	    		<<", "<<hit->Integral()<<") ";
+	    	}
+	    	cout<<endl;
+	    }
+	}
+	cout<<endl;
+    }
+
 }
 
 bool CosmicAna::insideTPC(const TVector3& pos)
