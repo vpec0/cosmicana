@@ -28,7 +28,7 @@ void attachFiles(TChain* tree, const char* fname, int batchNo, int Nruns) {
 	cout<<"Will add production files from batch "
 	    <<batchNo<<" to the chain (unchecked)."<<endl;
 	TString batch = Form("2000%02d", batchNo);
-	TString topdir = "/data/kumar/dune/cosmic/largeproduction/data/";
+	TString topdir = "/data/dune/calibration/cosmic_muons/dunetpc_v08_34_00/"; //"/data/kumar/dune/cosmic/largeproduction/data/";
 	topdir += batch + "00/";
 	for (int j = 0; j<Nruns; j++) {
 	    TString fname = topdir +
