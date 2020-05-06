@@ -16,52 +16,51 @@ void saveAnaBasicHists(const char* fname, const char* outpref)
     gStyle->SetTitleOffset(1.2, "xy");
     gStyle->SetTitleY(0.96);
 
+    gStyle->SetPadGridX(1);
+    gStyle->SetPadGridY(1);
+
     gStyle->SetOptStat(0);
 
+#define LIST					\
+    ITEM(    E_gen					)	\
+	ITEM(   Phi_fnal_gen				)	\
+	ITEM(	Phi_east_gen				)	\
+	ITEM(	Theta_gen				)	\
+	ITEM(	E_all					)	\
+	ITEM(	E_primary				)	\
+	ITEM(	E_secondary				)	\
+	ITEM(	E_gen_logx				)	\
+	ITEM(	E_all_logx				)	\
+	ITEM(	E_primary_logx				)	\
+	ITEM(	E_secondary_logx			)	\
+	ITEM(	Phi	        			)	\
+	ITEM(	Phi_fnal	       			)	\
+	ITEM(	Phi_east	       			)	\
+	ITEM(	Theta					)	\
+	ITEM(	Path_primary				)	\
+	ITEM(	Path_secondary				)	\
+	ITEM(	Eloss					)	\
+	ITEM(	Eloss_logx				)	\
+	ITEM(	Elosspath				)	\
+	ITEM(	Elosspath_logx				)	\
+	ITEM(	EMichel_all				)	\
+	ITEM(	EMichel_primary				)	\
+	ITEM(	Epi0					)	\
+	ITEM(	Npi0					)	\
+	ITEM(	Ntracks					)	\
+	ITEM(	Nshowers				)	\
+	ITEM(	NHists )
+
+
+#define ITEM(item) item,
     enum {
-	E_gen = 0,
-	E_all,
-	E_primary,
-	E_secondary,
-	E_gen_logx,
-	E_all_logx,
-	E_primary_logx,
-	E_secondary_logx,
-	Phi,
-	Theta,
-	Path_primary,
-	Path_secondary,
-	Eloss,
-	Eloss_logx,
-	EMichel_all,
-	EMichel_primary,
-	Epi0,
-	Npi0,
-	Ntracks,
-	Nshowers,
-	NHists
+	LIST
     };
 
+#undef ITEM
+#define ITEM(item) #item,
     vector<TString> hnames = {
-	"E_gen",
-	"E_all",
-	"E_primary",
-	"E_secondary",
-	"E_gen_logx",
-	"E_all_logx",
-	"E_primary_logx",
-	"E_secondary_logx",
-	"Phi",
-	"Theta",
-	"Path_primary",
-	"Path_secondary",
-	"Eloss",
-	"Eloss_logx",
-	"EMichel_all",
-	"EMichel_primary",
-	"Epi0",
-	"Ntracks",
-	"Nshowers",
+	LIST
     };
 
     vector<int> rebin(NHists, 0);
@@ -69,18 +68,23 @@ void saveAnaBasicHists(const char* fname, const char* outpref)
     rebin[E_all] = 10;
     rebin[E_primary] = 10;
     rebin[Phi] = 2;
+    rebin[Phi_east] = 2;
+    rebin[Phi_fnal] = 2;
     rebin[Path_secondary] = 5;
     rebin[Eloss] = 5;
+    rebin[Elosspath] = 1;
     rebin[EMichel_all] = 10;
     rebin[EMichel_primary] = 10;
     rebin[Epi0] = 10;
 
     vector<double> range_min(NHists, -999);
     range_min[Theta] = 0.;
+    range_min[Theta_gen] = 0.;
 
     vector<double> range_max(NHists, -999);
     range_max[Path_secondary] = 4;
     range_max[Eloss] = 600;
+    range_max[Elosspath] = 10;
     range_max[EMichel_all] = 60;
     range_max[EMichel_primary] = 60;
     range_max[Epi0] = 35;
@@ -89,9 +93,14 @@ void saveAnaBasicHists(const char* fname, const char* outpref)
     for (int i = E_gen_logx; i <= E_secondary_logx; ++i)
 	logx[i] = 1;
     logx[Eloss_logx] = 1;
+    logx[Elosspath_logx] = 1;
 
     vector<int> logy(NHists, 1);
     logy[Phi] = 0;
+    logy[Phi_fnal] = 0;
+    logy[Phi_east] = 0;
+    logy[Phi_fnal_gen] = 0;
+    logy[Phi_east_gen] = 0;
     logy[EMichel_all] = 0;
     logy[EMichel_primary] = 0;
 
