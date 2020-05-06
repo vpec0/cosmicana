@@ -11,12 +11,19 @@
 
 #include "anatree.h"
 
+#include "common.icc"
+
 void doXlog(TH1* h);
 
-void process_ana_basic(const char* fname = "", const char* outpref = "")
+void process_ana_basic(const char* fname = "", const char* outpref = "",
+		       int batchNo = 20002100, int Nruns = 10,
+		       const char* data_version = "v08_34_00")
 {
     enum {
 	E_gen = 0,
+	Phi_fnal_gen,
+	Phi_east_gen,
+	Theta_gen,
 	E_all,
 	E_primary,
 	E_secondary,
@@ -52,6 +59,9 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
 #define H1(name, title, nbins, low, high) hists[name] = new TH1F(#name, title, nbins, low, high)
 
     H1(E_gen, "Energy of generated muons;Energy [GeV]", 2000, 0, 20e3);
+    H1(Phi_fnal_gen, "Azimuth angle from direction to FNAL;#phi_{FNAL} [#circ]", 360, 0, 360); // from -Z axis, clock-wise in XZ plane
+    H1(Phi_east_gen, "Azimuth angle from east direction;#phi_{east} [#circ]", 360, 0, 360); // from -Z axis, clock-wise in XZ plane
+    H1(Theta_gen, "Zenith angle;cos(#theta)", 200, -1, 1); // from -Z axis, clock-wise in XZ plane
     H1(E_all, "Energy of all muons in TPC;Energy [GeV]", 2000, 0, 20e3);
     H1(E_primary, "Energy of primary muons in TPC;Energy [GeV]", 2000, 0, 20e3);
     H1(E_secondary, "Energy of secondary muons in TPC;Energy [GeV]", 200, 0, 2);
@@ -103,29 +113,8 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
 
 
     //***** Input tree *****
-    TChain* tree = 0;
-    if (!strcmp(fname, "")) { // no input given
-	cout<<"Will add all production files to the chain (unchecked)."<<endl;
-	tree = new TChain("analysistree/anatree");
-	for (int i = 21; i<=30; i++) {
-	    TString topdir = Form("data/kumar/2000%02d00/", i);
-	    for (int j = 0; j<100; j++) {
-		TString fname = topdir +
-		    Form("2000%02d%02d/MUSUN_dunefd_2000%02d%02d_gen_g4_detsim_reco_ana.root",i,j,i,j);
-		int status = tree->Add(fname, 500);
-	    }
-	}
-    } else { // input given
-	cout<<"Adding "<<fname<<" to the chain."<<endl;
-	tree = new TChain("analysistree/anatree");
-	int status = tree->Add(fname, -1);
-	if (!status) { // try to look in the base dir
-	    tree->SetName("anatree");
-	    status = tree->Add(fname, -1);
-	}
-	cout<<"Status: "<<status<<endl;
-    }
-
+    auto tree = new TChain("analysistree/anatree");
+    size_t size = attachFiles(tree, fname, batchNo, Nruns, "v08_50_00");
     anatree* evt = new anatree(tree);
 
     // allow only selected branches!
@@ -139,6 +128,7 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
     	"geant_list_size",
 	"inTPCActive",
 	"Eng",
+	"Px", "Py", "Pz", "P",
 	"Mother",
 	"TrackId",
 	"pdg",
@@ -177,7 +167,6 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
     TString capture_name = "muminuscaptureatrest";
 
     cout<<"Starting a loop over the tree"<<endl;
-    int size = tree->GetEntriesFast();
     int fiftieth = size / 50;
     cout<<"Will loop over "<<size<<" entries."<<endl;
 
@@ -186,16 +175,15 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
 
     //size = 50000;
     cout<<"|                                                  |\r|";
-    for (int ientry = 0; ientry < size; ++ientry) {
+    size_t ientry = 0;
+    while (tree->GetEntry(ientry++)) {
 	// print progress
-	if ( (ientry+1)%fiftieth == 0) {
+	if ( (ientry)%fiftieth == 0) {
 	    cout<<"-";
 	    cout.flush();
 	}
 
 	// get an entry
-	int status = tree->GetEntry(ientry);
-	if (!status) break;
 	entries_processed++;
 	int nparticles = evt->geant_list_size;
 
@@ -219,6 +207,15 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
 	// gen energies
 	hists[E_gen]->Fill(evt->Eng[0]); // assuming primary is always stored first
 	hists[E_gen_logx]->Fill(evt->Eng[0]); // assuming primary is always stored first
+
+	// gen direction
+	double phi = TMath::ATan2(-evt->Px[0], -evt->Pz[0]);
+	phi *= 180./TMath::Pi(); // convert to degrees
+	phi += 180; // shift to start from -Z axis
+	hists[Phi_fnal_gen]->Fill(phi);
+	hists[Phi_east_gen]->Fill((phi<7.)?(phi-7)+360:phi-7);
+	hists[Theta_gen]->Fill(-evt->Py[0]/evt->P[0]);
+
 
 	// in TPC energy, path length, energy loss
 	if (evt->inTPCActive[0]) {
@@ -385,26 +382,4 @@ void process_ana_basic(const char* fname = "", const char* outpref = "")
 
     outf->Close();
     cout<<"Saved and closed output file"<<endl;
-}
-
-
-void doXlog(TH1* h)
-// redo scales for x-log hists
-{
-    TAxis* axis = h->GetXaxis();
-
-    double start = TMath::Log10(axis->GetXmin());
-    double stop = TMath::Log10(axis->GetXmax());
-    double range = stop - start;
-    int nbins = axis->GetNbins();
-    double binwidth = range / nbins;
-
-    double *bins = new double[nbins+1];
-    for (int i = 0; i < (nbins+1); ++i) {
-        bins[i] = TMath::Power(10, start + i*binwidth);
-    }
-
-    axis->Set(nbins, bins);
-
-    delete[] bins;
 }

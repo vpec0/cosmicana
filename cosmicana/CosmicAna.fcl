@@ -26,6 +26,9 @@ physics:
       {
 	 module_type: "CosmicAna"
 	 SimModuleLabel: "largeant"
+	 HitModuleLabel: "linecluster"
+	 RecoTrackModuleLabel: "pandoraTrack"
+	 CaloModuleLabel: "pandoracalo"
       }
    }
 

@@ -13,8 +13,9 @@
 
 #include "common.icc"
 
-const double kXtoT = 1./160.563; // converts cm to ms, calculated for field 0.5kV/cm and temperature 87K
+int whichTPC(double);
 
+const double kXtoT = 1./160.563; // converts cm to ms, calculated for field 0.5kV/cm and temperature 87K
 
 void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int batchNo = 21, int Nruns = 10)
 {
@@ -30,6 +31,18 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int bat
 	NHists
     };
 
+    enum {
+	Dedx_vs_x = 0,
+	Dedx_vs_x_plane0,
+	Dedx_vs_x_plane1,
+	Dedx_vs_x_plane2,
+	Dedx_vs_t,
+	Dedx_vs_t_plane0,
+	Dedx_vs_t_plane1,
+	Dedx_vs_t_plane2,
+	NHists_dedx
+    };
+
     TH1* hists[NHists] = {};
 #define H1(name, title, nbins, low, high) hists[name] = new TH1F(#name, title, nbins, low, high)
 #define H2(name, title, nbinsx, lowx, highx, nbinsy, lowy, highy) hists[name] = new TH2F(#name, title, nbinsx, lowx, highx, nbinsy, lowy, highy)
@@ -43,6 +56,42 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int bat
     H2(Dqdx_vs_t_plane0, "dQ/dx vs t plane 0;t [ms]", 400, -5, 5, 400, 0, 800);
     H2(Dqdx_vs_t_plane1, "dQ/dx vs t plane 1;t [ms]", 400, -5, 5, 400, 0, 800);
     H2(Dqdx_vs_t_plane2, "dQ/dx vs t plane 2;t [ms]", 400, -5, 5, 400, 0, 800);
+
+#undef H1
+#undef H2
+   TH1* hists_corrected[NHists_dedx] = {};
+#define H1(name, title) hists_corrected[name] =			    \
+       new TH2F(#name"_corr", Form("dQ/dx vs x%s Corrected;x [cm]",title), \
+		400, -800, 800, 400, 0, 800 )
+#define H2(name, title) hists_corrected[name] =			    \
+       new TH2F(#name"_corr", Form("dQ/dx vs x%s Corrected;t [ms]",title), \
+		400, -5, 5, 400, 0, 800 )
+
+    H1(Dqdx_vs_x, "");
+    H1(Dqdx_vs_x_plane0, " plane 0");
+    H1(Dqdx_vs_x_plane1, " plane 1");
+    H1(Dqdx_vs_x_plane2, " plane 2");
+
+    H2(Dqdx_vs_t, "");
+    H2(Dqdx_vs_t_plane0, " plane 0");
+    H2(Dqdx_vs_t_plane1, " plane 1");
+    H2(Dqdx_vs_t_plane2, " plane 2");
+
+#undef H1
+#undef H2
+   TH1* hists_dedx[NHists_dedx] = {};
+#define H1(name, title) hists_dedx[name] = new TH2F(#name, Form("dE/dx vs x%s;x [cm]",title), 400, -800, 800, 400, 0, 10 )
+#define H2(name, title) hists_dedx[name] = new TH2F(#name, Form("dE/dx vs x%s;t [ms]",title), 400, -5, 5, 400, 0, 10 )
+
+    H1(Dedx_vs_x, "");
+    H1(Dedx_vs_x_plane0, " plane 0");
+    H1(Dedx_vs_x_plane1, " plane 1");
+    H1(Dedx_vs_x_plane2, " plane 2");
+
+    H2(Dedx_vs_t, "");
+    H2(Dedx_vs_t_plane0, " plane 0");
+    H2(Dedx_vs_t_plane1, " plane 1");
+    H2(Dedx_vs_t_plane2, " plane 2");
 
     //***** Input tree *****
     auto tree = new TChain("analysistree/anatree");
@@ -80,6 +129,7 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int bat
 	"ntracks_pandoraTrack",
 	"ntrkhits_pandoraTrack",
 	"trkdqdx_pandoraTrack",
+	"trkdedx_pandoraTrack",
 	"trkxyz_pandoraTrack",
 	"trklen_pandoraTrack"
     };
@@ -129,14 +179,45 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int bat
 	    for (int iplane = 0; iplane < 3; ++iplane) {
 		for (int i = 0; i < tmp_hits; ++i) {
 		    double dqdx = evt->trkdqdx_pandoraTrack[itrack][iplane][i];
+		    double dedx = evt->trkdedx_pandoraTrack[itrack][iplane][i];
 		    if ( dqdx != 0.) {
 			double x = evt->trkxyz_pandoraTrack[itrack][iplane][i][0];
 			double t = x * kXtoT;
+
 			hists[Dqdx_vs_x_plane0 + iplane]->Fill(x, dqdx);
 			hists[Dqdx_vs_t_plane0 + iplane]->Fill(t, dqdx);
+
 			if (iplane == best_plane) {
 			    hists[Dqdx_vs_x]->Fill(x, dqdx);
 			    hists[Dqdx_vs_t]->Fill(t, dqdx);
+			}
+
+			// do corrections, only within main TPCs
+			if ( x > CosmicMuonEvent::APA_X_POSITIONS[0]
+			     && x < CosmicMuonEvent::APA_X_POSITIONS[2] ) {
+			    // get the hits drift time from the point's x coordinate
+			    int tpc = whichTPC(x);
+			    double dt = ( -1 + 2*((tpc+1)%2) )*(x - CosmicMuonEvent::APA_X_POSITIONS[(tpc+1)/2]);
+			    dt *= kXtoT;
+			    double correction = TMath::Exp(-dt/2.88);
+			    double dqdx_corrected = dqdx/correction;
+
+			    hists_corrected[Dqdx_vs_x_plane0 + iplane]->Fill(x, dqdx_corrected);
+			    hists_corrected[Dqdx_vs_t_plane0 + iplane]->Fill(t, dqdx_corrected);
+			    if (iplane == best_plane) {
+				hists_corrected[Dqdx_vs_x]->Fill(x, dqdx_corrected);
+				hists_corrected[Dqdx_vs_t]->Fill(t, dqdx_corrected);
+			    }
+			}
+		    }
+		    if ( dedx != 0.) {
+			double x = evt->trkxyz_pandoraTrack[itrack][iplane][i][0];
+			double t = x * kXtoT;
+			hists_dedx[Dedx_vs_x_plane0 + iplane]->Fill(x, dedx);
+			hists_dedx[Dedx_vs_t_plane0 + iplane]->Fill(t, dedx);
+			if (iplane == best_plane) {
+			    hists_dedx[Dedx_vs_x]->Fill(x, dedx);
+			    hists_dedx[Dedx_vs_t]->Fill(t, dedx);
 			}
 		    }
 		}
@@ -158,6 +239,28 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int bat
 	h->Write(0, TObject::kOverwrite);
     }
 
+    for (auto h : hists_corrected) {
+	h->Write(0, TObject::kOverwrite);
+    }
+
+    for (auto h : hists_dedx) {
+	h->Write(0, TObject::kOverwrite);
+    }
+
     outf->Close();
     cout<<"Saved and closed output file "<<outf->GetName()<<endl;
+}
+
+int whichTPC(double x) {
+    int i = 0;
+    for (; i < 4; ++i) {
+	int iapa = (i+1)/2;
+	int icpa = i/2;
+	double xapa = CosmicMuonEvent::APA_X_POSITIONS[iapa];
+	double xcpa = CosmicMuonEvent::CPA_X_POSITIONS[icpa];
+	if ( (x > xapa && x < xcpa) || (x < xapa && x > xcpa) )
+	    break;
+    }
+
+    return i;
 }
