@@ -17,7 +17,9 @@ int whichTPC(double);
 
 const double kXtoT = 1./160.563; // converts cm to ms, calculated for field 0.5kV/cm and temperature 87K
 
-void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int batchNo = 21, int Nruns = 10)
+void process_dqdx_vs_x(const char* fname = "", const char* outpref = "",
+		       int batchNo = 20002100, size_t Nruns = 10, size_t startRun = 0,
+		       const char* data_version = "v08_34_00")
 {
     enum {
 	Dqdx_vs_x = 0,
@@ -95,7 +97,7 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int bat
 
     //***** Input tree *****
     auto tree = new TChain("analysistree/anatree");
-    attachFiles(tree, fname, batchNo, Nruns);
+    size_t size = attachFiles(tree, fname, batchNo, Nruns, startRun, data_version);
     anatree* evt = new anatree(tree);
 
     // allow only selected branches!
@@ -139,30 +141,35 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int bat
 
     //***** Process *****
     cout<<"Starting a loop over the tree"<<endl;
-    int size = tree->GetEntriesFast();
     int entries_processed = 0;
     int fiftieth = size / 50;
     cout<<"Will loop over "<<size<<" entries."<<endl;
 
+
+    size_t events_passing_selection = 0;
+    size_t tracks_passing_selection = 0;
+
     //size = 50000;
     cout<<"|                                                  |\r|";
-    for (int ientry = 0; ientry < size; ++ientry) {
+    size_t ientry = 0;
+    while ( tree->GetEntry(ientry++) ) {
 	// print progress
-	if ( (ientry+1)%fiftieth == 0) {
+	if ( (ientry)%fiftieth == 0) {
 	    cout<<"-";
 	    cout.flush();
 	}
 
-	// get an entry
-	int status = tree->GetEntry(ientry);
-	if (!status) break;
 	entries_processed++;
 	int ntracks = evt->ntracks_pandoraTrack;
 
 	// loop over stored tracks
+	bool passed = false ;
 	for (int itrack = 0; itrack < ntracks; ++itrack) {
 	    // make a threshold on reco track length
 	    if (evt->trklen_pandoraTrack[itrack] < 200.) continue; // at least 2-m long track
+	    if (!passed) passed = true;
+
+	    ++tracks_passing_selection;
 
 	    // choose the best plane
 	    int best_plane = 0;
@@ -225,11 +232,16 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "", int bat
 
 	}// track loop
 
+	if (passed)
+	    ++events_passing_selection;
+
     }// tree entry loop
     cout<<"|"<<endl;
 
     cout<<"Done."<<endl;
     cout<<"Processed "<<entries_processed<<" entries."<<endl;
+    cout<<"Events passing selection: "<<events_passing_selection<<endl
+	<<"Tracks passing selection: "<<tracks_passing_selection<<endl;
 
     //***** Output file *****
     auto outf = TFile::Open(Form("%sanahists.root", outpref), "UPDATE");
