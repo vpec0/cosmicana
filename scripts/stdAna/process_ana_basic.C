@@ -16,7 +16,7 @@
 void doXlog(TH1* h);
 
 void process_ana_basic(const char* fname = "", const char* outpref = "",
-		       int batchNo = 20002100, int Nruns = 10,
+		       size_t batchNo = 20002100, size_t Nruns = 10, size_t startRun = 0,
 		       const char* data_version = "v08_34_00")
 {
     enum {
@@ -114,7 +114,7 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 
     //***** Input tree *****
     auto tree = new TChain("analysistree/anatree");
-    size_t size = attachFiles(tree, fname, batchNo, Nruns, "v08_50_00");
+    size_t size = attachFiles(tree, fname, batchNo, Nruns, startRun, data_version);
     anatree* evt = new anatree(tree);
 
     // allow only selected branches!
@@ -154,8 +154,10 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 
 
     //***** Process *****
+    int n_evts_in_tpc = 0;
     int n_michel_total = 0;
     int n_michel_primary = 0;
+    int n_mu_in_tpc_all = 0;
     int n_mu_stopped_in_tpc_all = 0;
     int n_mu_stopped_in_tpc_primary = 0;
     int n_pi0 = 0;
@@ -197,6 +199,13 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 	map<int,int> trkId2pdgMap;
 	for (int ipart = 0; ipart < nparticles; ++ipart)
 	    trkId2pdgMap[evt->TrackId[ipart]] = evt->pdg[ipart];
+
+	for (int ipart = 0; ipart < nparticles; ++ipart) {
+	    if (evt->inTPCActive[ipart]) {
+		n_evts_in_tpc++;
+		break;
+	    }
+	}
 
 	// Fill histograms
 	//
@@ -251,6 +260,7 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 	    cut_passed[0]++;
 
 	    if (abs(evt->pdg[ipart]) == 13) { // a muon
+		n_mu_in_tpc_all++;
 		// fill a muon in TPC
 		hists[E_all]->Fill(evt->StartE_tpcAV[ipart]);
 		hists[E_all_logx]->Fill(evt->StartE_tpcAV[ipart]);
@@ -359,6 +369,9 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 
     cout<<"In TPC AV:"<<endl;
 
+    cout<<"Total events in TPC: "<<n_evts_in_tpc<<endl;
+    cout<<"Total primary muons in TPC: "<<hists[E_primary]->GetEntries()<<endl;
+    cout<<"Total muons in TPC: "<<n_mu_in_tpc_all<<endl;
     cout<<"Muons stopped total: "<<n_mu_stopped_in_tpc_all<<endl
 	<<"Muons stopped primary: "<<n_mu_stopped_in_tpc_primary<<endl;
     cout<<endl;

@@ -24,7 +24,7 @@ const int MAX_GENIE_PRIMARIES = 10;
 const int MAX_G4_PARTICLES = 250000;
 const int MAX_SHOWERS = 100;
 const int MAX_TRACKS = 5000;
-
+const int MAX_TRACK_HITS = 2000;
 
 class anatree {
 public :
@@ -276,11 +276,11 @@ public :
    Float_t         trkpurtruth_pmtrack[MAX_TRACKS][3];
    Float_t         trkpitchc_pmtrack[MAX_TRACKS][3];
    Short_t         ntrkhits_pmtrack[MAX_TRACKS][3];
-   Float_t         trkdedx_pmtrack[MAX_TRACKS][3][2000];
-   Float_t         trkdqdx_pmtrack[MAX_TRACKS][3][2000];
-   Float_t         trkresrg_pmtrack[MAX_TRACKS][3][2000];
-   Int_t           trktpc_pmtrack[MAX_TRACKS][3][2000];
-   Float_t         trkxyz_pmtrack[MAX_TRACKS][3][2000][3];
+   Float_t         trkdedx_pmtrack[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkdqdx_pmtrack[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkresrg_pmtrack[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Int_t           trktpc_pmtrack[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkxyz_pmtrack[MAX_TRACKS][3][MAX_TRACK_HITS][3];
    Float_t         trkstartx_pmtrack[MAX_TRACKS];
    Float_t         trkstarty_pmtrack[MAX_TRACKS];
    Float_t         trkstartz_pmtrack[MAX_TRACKS];
@@ -347,11 +347,11 @@ public :
    Float_t         trkpurtruth_pmtracktc[MAX_TRACKS][3];
    Float_t         trkpitchc_pmtracktc[MAX_TRACKS][3];
    Short_t         ntrkhits_pmtracktc[MAX_TRACKS][3];
-   Float_t         trkdedx_pmtracktc[MAX_TRACKS][3][2000];
-   Float_t         trkdqdx_pmtracktc[MAX_TRACKS][3][2000];
-   Float_t         trkresrg_pmtracktc[MAX_TRACKS][3][2000];
-   Int_t           trktpc_pmtracktc[MAX_TRACKS][3][2000];
-   Float_t         trkxyz_pmtracktc[MAX_TRACKS][3][2000][3];
+   Float_t         trkdedx_pmtracktc[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkdqdx_pmtracktc[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkresrg_pmtracktc[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Int_t           trktpc_pmtracktc[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkxyz_pmtracktc[MAX_TRACKS][3][MAX_TRACK_HITS][3];
    Float_t         trkstartx_pmtracktc[MAX_TRACKS];
    Float_t         trkstarty_pmtracktc[MAX_TRACKS];
    Float_t         trkstartz_pmtracktc[MAX_TRACKS];
@@ -418,11 +418,11 @@ public :
    Float_t         trkpurtruth_pandoraTrack[MAX_TRACKS][3];
    Float_t         trkpitchc_pandoraTrack[MAX_TRACKS][3];
    Short_t         ntrkhits_pandoraTrack[MAX_TRACKS][3];
-   Float_t         trkdedx_pandoraTrack[MAX_TRACKS][3][2000];
-   Float_t         trkdqdx_pandoraTrack[MAX_TRACKS][3][2000];
-   Float_t         trkresrg_pandoraTrack[MAX_TRACKS][3][2000];
-   Int_t           trktpc_pandoraTrack[MAX_TRACKS][3][2000];
-   Float_t         trkxyz_pandoraTrack[MAX_TRACKS][3][2000][3];
+   Float_t         trkdedx_pandoraTrack[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkdqdx_pandoraTrack[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkresrg_pandoraTrack[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Int_t           trktpc_pandoraTrack[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkxyz_pandoraTrack[MAX_TRACKS][3][MAX_TRACK_HITS][3];
    Float_t         trkstartx_pandoraTrack[MAX_TRACKS];
    Float_t         trkstarty_pandoraTrack[MAX_TRACKS];
    Float_t         trkstartz_pandoraTrack[MAX_TRACKS];
@@ -489,11 +489,11 @@ public :
    Float_t         trkpurtruth_pmtrajfit[MAX_TRACKS][3];
    Float_t         trkpitchc_pmtrajfit[MAX_TRACKS][3];
    Short_t         ntrkhits_pmtrajfit[MAX_TRACKS][3];
-   Float_t         trkdedx_pmtrajfit[MAX_TRACKS][3][2000];
-   Float_t         trkdqdx_pmtrajfit[MAX_TRACKS][3][2000];
-   Float_t         trkresrg_pmtrajfit[MAX_TRACKS][3][2000];
-   Int_t           trktpc_pmtrajfit[MAX_TRACKS][3][2000];
-   Float_t         trkxyz_pmtrajfit[MAX_TRACKS][3][2000][3];
+   Float_t         trkdedx_pmtrajfit[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkdqdx_pmtrajfit[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkresrg_pmtrajfit[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Int_t           trktpc_pmtrajfit[MAX_TRACKS][3][MAX_TRACK_HITS];
+   Float_t         trkxyz_pmtrajfit[MAX_TRACKS][3][MAX_TRACK_HITS][3];
    Float_t         trkstartx_pmtrajfit[MAX_TRACKS];
    Float_t         trkstarty_pmtrajfit[MAX_TRACKS];
    Float_t         trkstartz_pmtrajfit[MAX_TRACKS];
