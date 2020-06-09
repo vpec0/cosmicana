@@ -48,7 +48,8 @@ private:
 
     TString fDataVersion;
 
-    map<TString, vector<TH1*>> fMVHists;
+    map<TString, vector<TH1*> > fMVHists;
+    map<TString, map<int, vector<TH1*> > > fMVHistsByTPC;
 
     FileHandler fFHandler;
     HistHandler fHHandler;
@@ -105,53 +106,72 @@ int DqDxProcessor::Initialize()
 {
     /// Histograms
 
+#define HIST_LIST				\
+    H1(Dqdx_vs_x, "");				\
+    H1(Dqdx_vs_x_plane0, " plane 0");		\
+    H1(Dqdx_vs_x_plane1, " plane 1");		\
+    H1(Dqdx_vs_x_plane2, " plane 2");		\
+    H2(Dqdx_vs_t, "");				\
+    H2(Dqdx_vs_t_plane0, " plane 0");		\
+    H2(Dqdx_vs_t_plane1, " plane 1");		\
+    H2(Dqdx_vs_t_plane2, " plane 2")		\
+
+
     TH1* hists[NHists] = {};
-#define H1(name, title, nbins, low, high) hists[name] = new TH1F(#name, title, nbins, low, high)
-#define H2(name, title, nbinsx, lowx, highx, nbinsy, lowy, highy) hists[name] = new TH2F(#name, title, nbinsx, lowx, highx, nbinsy, lowy, highy)
+#define H1(name, title) hists[name] =			    \
+       new TH2D(#name, Form("dQ/dx vs x%s;x [cm]",title), \
+		400, -800, 800, 400, 0, 800 )
+#define H2(name, title) hists[name] =			    \
+       new TH2D(#name, Form("dQ/dx vs x%s;t [ms]",title), \
+		400, -5, 5, 400, 0, 800 )
 
-    H2(Dqdx_vs_x, "dQ/dx vs x;x [cm]", 400, -800, 800, 400, 0, 800);
-    H2(Dqdx_vs_x_plane0, "dQ/dx vs x plane 0;x [cm]", 400, -800, 800, 400, 0, 800);
-    H2(Dqdx_vs_x_plane1, "dQ/dx vs x plane 1;x [cm]", 400, -800, 800, 400, 0, 800);
-    H2(Dqdx_vs_x_plane2, "dQ/dx vs x plane 2;x [cm]", 400, -800, 800, 400, 0, 800);
-
-    H2(Dqdx_vs_t, "dQ/dx vs t;t [ms]", 400, -5, 5, 400, 0, 800);
-    H2(Dqdx_vs_t_plane0, "dQ/dx vs t plane 0;t [ms]", 400, -5, 5, 400, 0, 800);
-    H2(Dqdx_vs_t_plane1, "dQ/dx vs t plane 1;t [ms]", 400, -5, 5, 400, 0, 800);
-    H2(Dqdx_vs_t_plane2, "dQ/dx vs t plane 2;t [ms]", 400, -5, 5, 400, 0, 800);
+    HIST_LIST;
 
     for (auto h: hists)
 	fMVHists["dqdx"].push_back(h);
 
 
+    // do the same for each TPC -> 300 histograms x 8
 #undef H1
 #undef H2
-   TH1* hists_corrected[NHists_dedx] = {};
-#define H1(name, title) hists_corrected[name] =			    \
-       new TH2F(#name"_corr", Form("dQ/dx vs x%s Corrected;x [cm]",title), \
-		400, -800, 800, 400, 0, 800 )
-#define H2(name, title) hists_corrected[name] =			    \
-       new TH2F(#name"_corr", Form("dQ/dx vs x%s Corrected;t [ms]",title), \
-		400, -5, 5, 400, 0, 800 )
+#define H1(name, title) tmphists[name] =				\
+	new TH2F(Form("%s_tpc%d", #name, itpc), Form("TPC %d: dQ/dx vs x%s;x [cm]", itpc, title), \
+		 150, -100, 500, 250, 0, 500 )
+#define H2(name, title) // don't create any vs t hists
+    // tmphists[name] =							\
+    // new TH2F(Form("%s_tpc%d", #name, itpc), Form("TPC %d: dQ/dx vs x%s;t [ms]", itpc, title), \
+    // 	 400, -5, 5, 250, 0, 500 )
 
-    H1(Dqdx_vs_x, "");
-    H1(Dqdx_vs_x_plane0, " plane 0");
-    H1(Dqdx_vs_x_plane1, " plane 1");
-    H1(Dqdx_vs_x_plane2, " plane 2");
+    for (int itpc = 0; itpc < 300; ++itpc) {
+	TH1* tmphists[NHists] = {};
 
-    H2(Dqdx_vs_t, "");
-    H2(Dqdx_vs_t_plane0, " plane 0");
-    H2(Dqdx_vs_t_plane1, " plane 1");
-    H2(Dqdx_vs_t_plane2, " plane 2");
+	HIST_LIST;
+
+	for (auto h: tmphists)
+	    fMVHistsByTPC["dqdx"][itpc].push_back(h);
+    }
+
+
+#undef H1
+#undef H2
+    TH1* hists_corrected[NHists_dedx] = {};
+#define H1(name, title) hists_corrected[name] =				\
+	new TH2D(#name"_corr", Form("dQ/dx vs x%s Corrected;x [cm]",title), \
+		 400, -800, 800, 400, 0, 800 )
+#define H2(name, title) hists_corrected[name] =				\
+	new TH2D(#name"_corr", Form("dQ/dx vs x%s Corrected;t [ms]",title), \
+		 400, -5, 5, 400, 0, 800 )
+
+    HIST_LIST;
 
     for (auto h: hists_corrected)
 	fMVHists["dqdx_corr"].push_back(h);
 
 #undef H1
 #undef H2
-   TH1* hists_dedx[NHists_dedx] = {};
-#define H1(name, title) hists_dedx[name] = new TH2F(#name, Form("dE/dx vs x%s;x [cm]",title), 400, -800, 800, 400, 0, 10 )
-#define H2(name, title) hists_dedx[name] = new TH2F(#name, Form("dE/dx vs x%s;t [ms]",title), 400, -5, 5, 400, 0, 10 )
-
+    TH1* hists_dedx[NHists_dedx] = {};
+#define H1(name, title) hists_dedx[name] = new TH2D(#name, Form("dE/dx vs x%s;x [cm]",title), 400, -800, 800, 400, 0, 10 )
+#define H2(name, title) hists_dedx[name] = new TH2D(#name, Form("dE/dx vs x%s;t [ms]",title), 400, -5, 5, 400, 0, 10 )
     H1(Dedx_vs_x, "");
     H1(Dedx_vs_x_plane0, " plane 0");
     H1(Dedx_vs_x_plane1, " plane 1");
@@ -208,17 +228,57 @@ int DqDxProcessor::Initialize()
 	"trkdqdx_pandoraTrack",
 	"trkdedx_pandoraTrack",
 	"trkxyz_pandoraTrack",
-	"trklen_pandoraTrack"
+	"trklen_pandoraTrack",
+	"trktpc_pandoraTrack"
     };
     tree->SetBranchStatus("*", 0);
     AnaTree::AllowBranches(tree, allowed);
     tree->SetMakeClass(1);
 
     //***** Output file *****
-    fOutFile = TFile::Open(Form("%sanahists.root", fOutPref.Data()), "UPDATE");
+    fOutFile = TFile::Open(Form("%sanahists.root", fOutPref.Data()), "recreate");
 
     return fOutFile->IsOpen();
 }
+
+
+
+int DqDxProcessor::Finalize()
+{
+    fOutFile->cd();
+    //***** Save hists *****
+    for (auto histspair: fMVHists) {
+	fOutFile->cd();
+	fOutFile->mkdir(histspair.first)->cd();
+	cout<<"Making directory "<<histspair.first<<endl;
+	for (auto h : histspair.second) {
+	    h->Write(0, TObject::kOverwrite);
+	}
+    }
+
+    fOutFile->cd();
+    for (auto tpcpair: fMVHistsByTPC) {
+	auto dir = fOutFile->GetDirectory(tpcpair.first);
+	dir->cd();
+	cout<<"Descending to directory "<<tpcpair.first<<endl;
+	for (auto histspair : tpcpair.second) {
+	    dir->mkdir(Form("TPC%d",histspair.first))->cd();
+	    for (auto h : histspair.second) {
+		// skip not filled hitograms
+		if (!h || h->GetEntries() == 0)
+		    continue;
+		h->Write(0, TObject::kOverwrite);
+	    }
+	}
+    }
+
+
+    fOutFile->Close();
+    cout<<"Saved and closed output file "<<fOutFile->GetName()<<endl;
+    return 1;
+}
+
+
 
 int DqDxProcessor::Process()
 {
@@ -232,6 +292,7 @@ int DqDxProcessor::Process()
     auto hists_corrected = fMVHists["dqdx_corr"];
     auto hists_dedx = fMVHists["dedx"];
 
+    auto hists_bytpc = fMVHistsByTPC["dqdx"];
 
     cout<<"Starting a loop over the tree"<<endl;
     int entries_processed = 0;
@@ -280,11 +341,19 @@ int DqDxProcessor::Process()
 	    // loop over all planes
 	    // loop over hits in the best plane
 	    for (int iplane = 0; iplane < 3; ++iplane) {
-		for (int i = 0; i < tmp_hits; ++i) {
-		    double dqdx = evt->trkdqdx_pandoraTrack[itrack][iplane][i];
-		    double dedx = evt->trkdedx_pandoraTrack[itrack][iplane][i];
+		int nhits = evt->ntrkhits_pandoraTrack[itrack][iplane];
+		if (nhits > MAX_TRACK_HITS)
+		    nhits = MAX_TRACK_HITS;
+		Float_t* dqdx_arr = evt->trkdqdx_pandoraTrack[itrack][iplane];
+		Float_t* dedx_arr = evt->trkdedx_pandoraTrack[itrack][iplane];
+		Int_t* tpc_arr = evt->trktpc_pandoraTrack[itrack][iplane];
+		Float_t* xyz_arr = (Float_t*)evt->trkxyz_pandoraTrack[itrack][iplane];
+		for (int i = 0; i < nhits; ++i) {
+		    double dqdx = dqdx_arr[i];
+		    double dedx = dedx_arr[i];
+		    int tpc = tpc_arr[i];
 		    if ( dqdx != 0.) {
-			double x = evt->trkxyz_pandoraTrack[itrack][iplane][i][0];
+			double x = xyz_arr[i*3];
 			double t = x * kXtoT;
 
 			hists[Dqdx_vs_x_plane0 + iplane]->Fill(x, dqdx);
@@ -295,13 +364,22 @@ int DqDxProcessor::Process()
 			    hists[Dqdx_vs_t]->Fill(t, dqdx);
 			}
 
+			int tpcx = tpc % 6;
+
+			double dx = ( -1 + 2*(tpcx%2) )*(x - APA_X_POSITIONS[tpcx/2]);
+			double dt = dx*kXtoT;
+
+			// fill hists by tpc
+			hists_bytpc[tpc][Dqdx_vs_x_plane0 + iplane]->Fill(dx, dqdx);
+
 			// do corrections, only within main TPCs
 			if ( x > APA_X_POSITIONS[0]
 			     && x < APA_X_POSITIONS[2] ) {
 			    // get the hits drift time from the point's x coordinate
-			    int tpc = whichTPC(x);
-			    double dt = ( -1 + 2*((tpc+1)%2) )*(x - APA_X_POSITIONS[(tpc+1)/2]);
-			    dt *= kXtoT;
+			    // TPCs include cryo-side volumes; 6 per
+			    // row, 12 per slice, 25 slices
+
+			    // do corrected histograms
 			    double correction = TMath::Exp(-dt/2.88);
 			    double dqdx_corrected = dqdx/correction;
 
@@ -314,7 +392,7 @@ int DqDxProcessor::Process()
 			}
 		    }
 		    if ( dedx != 0.) {
-			double x = evt->trkxyz_pandoraTrack[itrack][iplane][i][0];
+			double x = xyz_arr[i*3];
 			double t = x * kXtoT;
 			hists_dedx[Dedx_vs_x_plane0 + iplane]->Fill(x, dedx);
 			hists_dedx[Dedx_vs_t_plane0 + iplane]->Fill(t, dedx);
@@ -342,21 +420,6 @@ int DqDxProcessor::Process()
     return 1;
 }
 
-
-int DqDxProcessor::Finalize()
-{
-    fOutFile->cd();
-    //***** Save hists *****
-    for (auto histspair: fMVHists) {
-	for (auto h : histspair.second) {
-	    h->Write(0, TObject::kOverwrite);
-	}
-    }
-
-    fOutFile->Close();
-    cout<<"Saved and closed output file "<<fOutFile->GetName()<<endl;
-    return 1;
-}
 
 int DqDxProcessor::SelectEvent(anatree* evt)
 {
