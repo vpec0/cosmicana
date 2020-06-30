@@ -21,10 +21,6 @@ namespace CosmicMuonEvent {
     const unsigned int MAX_TRACKS = 1024;
     const unsigned int MAX_APAS = 150;
 
-    const double APA_X_POSITIONS[] = {-726.7681, 0., 726.7681};
-    const double CPA_X_POSITIONS[] = {-363.38405, 363.38405};
-    const double TPC_Z_SIZE = 232.39;
-
 
 #define VAR_LIST				\
     TRUTH_LIST;					\
