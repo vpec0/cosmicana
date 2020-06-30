@@ -62,7 +62,7 @@ void fitLifeTime_langau(const char* fname, const char* outpref)
 	if (hists.size() >= 4) break; // process only "vs x" histograms, don't care about "vs t"
 	outf->mkdir(Form("%s_dir", hname.Data()))->cd();
 
-	auto h = (TH2*) f->Get(hname);
+	auto h = (TH2*) f->Get("dqdx/"+hname);
 
 	c->cd(ipad);
 	h->Rebin2D(1,2);
