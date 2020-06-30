@@ -1,9 +1,14 @@
 
-void plotElifetimeResults(const char* dataversion)
+void
+plotElifetimeResults(const char* dataversion="v08_34_00",
+		     const char* cut="",
+		     const char* prefix = "",
+		     const char* suffix = "")
 {
     //auto dataversion = "v08_50_00";
-
-    TString fname = Form("plots/%s/elifetime/batch_2000*fits.root", dataversion);
+    TString base_dir = Form("plots/%s/elifetime/%s", dataversion, cut);
+    TString fname = Form("%s/%sbatch_2000*00%s_fits.root",
+			 base_dir.Data(), prefix, suffix);
     auto tree = new TChain("elifetime");
 
     tree->Add(fname);
@@ -82,15 +87,17 @@ void plotElifetimeResults(const char* dataversion)
 
     hmean->LabelsOption("v");
     hmean->Draw("PEX0");
-    c->SaveAs(Form("plots/%s/elifetime/mean_lifetime_fits_%s.pdf", dataversion, dataversion));
+    c->SaveAs(Form("%s/%smean_lifetime%s_fits_%s.pdf",
+		   base_dir.Data(), prefix, suffix, dataversion));
 
     hstddev->LabelsOption("v");
     hstddev->Draw("PEX0");
-    c->SaveAs(Form("plots/%s/elifetime/stddev_lifetime_fits_%s.pdf", dataversion, dataversion));
+    c->SaveAs(Form("%s/%sstddev_lifetime%s_fits_%s.pdf",
+		   base_dir.Data(), prefix, suffix, dataversion));
 
     // write out all the cumulated histograms
-    auto outf = TFile::Open(Form("plots/%s/elifetime/lifetime_fits_result_hists_%s.root",
-				 dataversion, dataversion),
+    auto outf = TFile::Open(Form("%s/%slifetime%s_fits_result_hists_%s.root",
+				 base_dir.Data(), prefix, suffix, dataversion),
 			    "recreate");
 
     for (int i = 0; i < 3; i++) {
