@@ -1,5 +1,4 @@
-#include "CosmicMuonEvent.h"
-
+#include "../constants.h"
 
 void doXlog(TH1* h)
 // redo scales for x-log hists
@@ -25,19 +24,26 @@ void doXlog(TH1* h)
 
 size_t attachFiles(TChain* tree, const char* fname,
 		   size_t batchNo, size_t Nruns, size_t startRun,
-		   const char* data_version = "v08_34_00")
+		   const char* data_version = "v08_34_00",
+		   const char* source = "")
 {
     size_t size = 0;
 
     if (!strcmp(fname, "")) { // no input given
 	cout<<"Will add production files from batch "
 	    <<batchNo<<" to the chain (unchecked)."<<endl;
+
 	TString batch = Form("%lu", batchNo);
-	//TString topdir = "/data/dune/calibration/cosmic_muons/dunetpc_";
-	TString topdir = "/data/kumar/dune/cosmic/largeproduction/";
-	//topdir.Append(data_version).Append("/");
-	topdir.Append(data_version).Append("/data/");
+	TString topdir = "/data/dune/calibration/cosmic_muons/dunetpc_";
+	topdir.Append(data_version).Append("/");
+	if (!strcmp("kumar", source)) {
+	    topdir = "/data/kumar/dune/cosmic/largeproduction/";
+	    topdir.Append(data_version).Append("/data/");
+	} else 	if (!strcmp("imran", source)) {
+	    topdir = "/data/iyusuff/cosmicgen_20190419/data/";
+	}
 	topdir.Append(batch + "/");
+
 	cout<<"Batch directory "<<topdir<<endl;
 	for (size_t j = 0; j<Nruns; j++) {
 	    TString runNo = Form("%lu", batchNo + j + startRun);
@@ -85,7 +91,7 @@ void crossingAPACPA(const TVector3& start, const TVector3& end, Int_t& napa, Int
     int iapa = -1;
     napa = 0;
     ncpa = 0;
-    for (auto xapa: CosmicMuonEvent::APA_X_POSITIONS) {
+    for (auto xapa: APA_X_POSITIONS) {
 	++iapa;
 	if ( (xapa < x1 && xapa < x2) || (xapa > x2 && xapa > x1) )
 	    continue; // not crossing this APA section
@@ -100,14 +106,14 @@ void crossingAPACPA(const TVector3& start, const TVector3& end, Int_t& napa, Int
 	// cout<<Form("(%.1f,%.1f,%.1f)", xapa, yapa, zapa)<<endl;
 
 	// get the APA number
-	int apanum = int(zapa / CosmicMuonEvent::TPC_Z_SIZE) * 6 + (yapa>0.)*3 + iapa;
+	int apanum = int(zapa / TPC_Z_SIZE) * 6 + (yapa>0.)*3 + iapa;
 
 	apa[napa] = apanum;
 	++napa;
     }
 
     int icpa = 0;
-    for (auto xcpa: CosmicMuonEvent::CPA_X_POSITIONS) {
+    for (auto xcpa: CPA_X_POSITIONS) {
 	++icpa;
 
 	if ( (xcpa < x1 && xcpa < x2) || (xcpa > x2 && xcpa > x1) )
@@ -121,7 +127,7 @@ void crossingAPACPA(const TVector3& start, const TVector3& end, Int_t& napa, Int
 	// cout<<Form("(%.1f,%.1f,%.1f)", xcpa, ycpa, zcpa)<<endl;
 
 	// get the CPA number
-	int cpanum = int(zcpa / CosmicMuonEvent::TPC_Z_SIZE) * 4 + (ycpa>0.)*2 + icpa;
+	int cpanum = int(zcpa / TPC_Z_SIZE) * 4 + (ycpa>0.)*2 + icpa;
 
 	cpa[ncpa] = cpanum;
 	++ncpa;

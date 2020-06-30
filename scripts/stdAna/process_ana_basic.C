@@ -17,7 +17,7 @@ void doXlog(TH1* h);
 
 void process_ana_basic(const char* fname = "", const char* outpref = "",
 		       size_t batchNo = 20002100, size_t Nruns = 10, size_t startRun = 0,
-		       const char* data_version = "v08_34_00")
+		       const char* data_version = "v08_34_00", const char* source = "")
 {
     enum {
 	E_gen = 0,
@@ -114,7 +114,7 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 
     //***** Input tree *****
     auto tree = new TChain("analysistree/anatree");
-    size_t size = attachFiles(tree, fname, batchNo, Nruns, startRun, data_version);
+    size_t size = attachFiles(tree, fname, batchNo, Nruns, startRun, data_version, source);
     anatree* evt = new anatree(tree);
 
     // allow only selected branches!

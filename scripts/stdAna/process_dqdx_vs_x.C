@@ -19,7 +19,7 @@ const double kXtoT = 1./160.563; // converts cm to ms, calculated for field 0.5k
 
 void process_dqdx_vs_x(const char* fname = "", const char* outpref = "",
 		       int batchNo = 20002100, size_t Nruns = 10, size_t startRun = 0,
-		       const char* data_version = "v08_34_00")
+		       const char* data_version = "v08_34_00", const char* source = "")
 {
     enum {
 	Dqdx_vs_x = 0,
@@ -97,7 +97,7 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "",
 
     //***** Input tree *****
     auto tree = new TChain("analysistree/anatree");
-    size_t size = attachFiles(tree, fname, batchNo, Nruns, startRun, data_version);
+    size_t size = attachFiles(tree, fname, batchNo, Nruns, startRun, data_version, source);
     anatree* evt = new anatree(tree);
 
     // allow only selected branches!
@@ -183,6 +183,9 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "",
 
 	    // loop over all planes
 	    // loop over hits in the best plane
+	    //
+	    // FIXME: Before using this code, tmp_hits needs to be
+	    // fixed! Similarly to how it's done in DqDxProcessor
 	    for (int iplane = 0; iplane < 3; ++iplane) {
 		for (int i = 0; i < tmp_hits; ++i) {
 		    double dqdx = evt->trkdqdx_pandoraTrack[itrack][iplane][i];
@@ -200,11 +203,11 @@ void process_dqdx_vs_x(const char* fname = "", const char* outpref = "",
 			}
 
 			// do corrections, only within main TPCs
-			if ( x > CosmicMuonEvent::APA_X_POSITIONS[0]
-			     && x < CosmicMuonEvent::APA_X_POSITIONS[2] ) {
+			if ( x > APA_X_POSITIONS[0]
+			     && x < APA_X_POSITIONS[2] ) {
 			    // get the hits drift time from the point's x coordinate
 			    int tpc = whichTPC(x);
-			    double dt = ( -1 + 2*((tpc+1)%2) )*(x - CosmicMuonEvent::APA_X_POSITIONS[(tpc+1)/2]);
+			    double dt = ( -1 + 2*((tpc+1)%2) )*(x - APA_X_POSITIONS[(tpc+1)/2]);
 			    dt *= kXtoT;
 			    double correction = TMath::Exp(-dt/2.88);
 			    double dqdx_corrected = dqdx/correction;
@@ -268,8 +271,8 @@ int whichTPC(double x) {
     for (; i < 4; ++i) {
 	int iapa = (i+1)/2;
 	int icpa = i/2;
-	double xapa = CosmicMuonEvent::APA_X_POSITIONS[iapa];
-	double xcpa = CosmicMuonEvent::CPA_X_POSITIONS[icpa];
+	double xapa = APA_X_POSITIONS[iapa];
+	double xcpa = CPA_X_POSITIONS[icpa];
 	if ( (x > xapa && x < xcpa) || (x < xapa && x > xcpa) )
 	    break;
     }
