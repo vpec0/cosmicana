@@ -11,7 +11,8 @@ public:
 
     static size_t attachFiles(TChain* tree, const char* fname,
 			      size_t batchNo, size_t Nruns, size_t startRun,
-			      const char* data_version = "v08_34_00")
+			      const char* data_version = "v08_34_00",
+			      const char* source = "")
     {
 	size_t size = 0;
 
@@ -19,8 +20,12 @@ public:
 	    cout<<"Will add production files from batch "
 		<<batchNo<<" to the chain (unchecked)."<<endl;
 	    TString batch = Form("%lu", batchNo);
-	    TString topdir = "/data/dune/calibration/cosmic_muons/dunetpc_"; //"/data/kumar/dune/cosmic/largeproduction/data/";
+	    TString topdir = "/data/dune/calibration/cosmic_muons/dunetpc_";
 	    topdir.Append(data_version).Append("/");
+	    if (!strcmp("kumar", source)) {
+		topdir = "/data/kumar/dune/cosmic/largeproduction/";
+		topdir.Append(data_version).Append("/data/");
+	    }
 	    topdir.Append(batch + "/");
 	    cout<<"Batch directory "<<topdir<<endl;
 	    for (size_t j = 0; j<Nruns; j++) {

@@ -11,8 +11,8 @@ class DqDxProcessor
 public:
     DqDxProcessor(const char* fname = "", const char* outpref = "",
 		  int batchNo = 20002100, size_t Nruns = 10, size_t startRun = 0,
-		  const char* data_version = "v08_34_00");
-    ~DqDxProcessor();
+		  const char* data_version = "v08_34_00", const char* source = "");
+    ~DqDxProcessor(){}
 
     int Initialize();
     int Process();
@@ -21,15 +21,18 @@ public:
 private:
     virtual int SelectEvent(anatree* evt);
     virtual int SelectTrack(anatree* evt, int itrack);
+    virtual int SelectHit(anatree* evt, int itrack, int iplane, int ihit);
 
-private:
+protected:
     int whichTPC(double x);
 
-private:
+protected:
     const double APA_X_POSITIONS[3] = {-726.7681, 0., 726.7681};
     const double CPA_X_POSITIONS[2] = {-363.38405, 363.38405};
     const double TPC_Z_SIZE = 232.39;
     const double kXtoT = 1./160.563; // converts cm to ms, calculated for field 0.5kV/cm and temperature 87K
+
+    std::vector<TString> fAllowed;
 
 private:
     TChain* fTree;
@@ -39,6 +42,7 @@ private:
 
     TString fIFName;
     TString fOutPref;
+    TString fSource;
 
     TFile* fOutFile;
 
@@ -87,18 +91,58 @@ private:
 
 DqDxProcessor::DqDxProcessor(const char* fname = "", const char* outpref = "",
 			     int batchNo = 20002100, size_t Nruns = 10, size_t startRun = 0,
-			     const char* data_version = "v08_34_00"):
+			     const char* data_version = "v08_34_00",
+			     const char* source = ""):
     fTree(0),
     fEvent(0),
     fSize(0),
     fIFName(fname),
     fOutPref(outpref),
+    fSource(source),
     fOutFile(0),
     fBatchNo(batchNo),
     fNruns(Nruns),
     fStartRun(startRun),
     fDataVersion(data_version)
 {
+    // allow only selected branches!
+    //
+    // This improves the speed of the tree processing. Any branch to
+    // be used needs to be added here, otherwise we don't get any data
+    // from it.
+    std::vector<TString> allowed = {
+	"run",
+	"event",
+    	// "geant_list_size",
+	// "inTPCActive",
+	// "Eng",
+	// "Mother",
+	// "TrackId",
+	// "pdg",
+	// "processname",
+	// "StartE_tpcAV",
+	// "StartPx_tpcAV",
+	// "StartPy_tpcAV",
+	// "StartPz_tpcAV",
+	// "StartP_tpcAV",
+	// "EndE_tpcAV",
+	// "EndPointx",
+	// "EndPointy",
+	// "EndPointz",
+	// "EndPointx_tpcAV",
+	// "EndPointy_tpcAV",
+	// "EndPointz_tpcAV",
+	// "pathlen",
+	"ntracks_pandoraTrack",
+	"ntrkhits_pandoraTrack",
+	"trkdqdx_pandoraTrack",
+	"trkdedx_pandoraTrack",
+	"trkxyz_pandoraTrack",
+	"trklen_pandoraTrack",
+	//	"trktpc_pandoraTrack"
+    };
+    for (auto allow: allowed)
+	fAllowed.push_back(allow);
 }
 
 
@@ -129,31 +173,31 @@ int DqDxProcessor::Initialize()
 
     for (auto h: hists)
 	fMVHists["dqdx"].push_back(h);
+#undef H1
+#undef H2
 
 
     // do the same for each TPC -> 300 histograms x 8
-#undef H1
-#undef H2
-#define H1(name, title) tmphists[name] =				\
-	new TH2F(Form("%s_tpc%d", #name, itpc), Form("TPC %d: dQ/dx vs x%s;x [cm]", itpc, title), \
-		 150, -100, 500, 250, 0, 500 )
-#define H2(name, title) // don't create any vs t hists
-    // tmphists[name] =							\
-    // new TH2F(Form("%s_tpc%d", #name, itpc), Form("TPC %d: dQ/dx vs x%s;t [ms]", itpc, title), \
-    // 	 400, -5, 5, 250, 0, 500 )
+// #define H1(name, title) tmphists[name] =				\
+// 	new TH2F(Form("%s_tpc%d", #name, itpc), Form("TPC %d: dQ/dx vs x%s;x [cm]", itpc, title), \
+// 		 150, -100, 500, 250, 0, 500 )
+// #define H2(name, title) // don't create any vs t hists
+//     // tmphists[name] =							\
+//     // new TH2F(Form("%s_tpc%d", #name, itpc), Form("TPC %d: dQ/dx vs x%s;t [ms]", itpc, title), \
+//     // 	 400, -5, 5, 250, 0, 500 )
 
-    for (int itpc = 0; itpc < 300; ++itpc) {
-	TH1* tmphists[NHists] = {};
+//     for (int itpc = 0; itpc < 300; ++itpc) {
+// 	TH1* tmphists[NHists] = {};
 
-	HIST_LIST;
+// 	HIST_LIST;
 
-	for (auto h: tmphists)
-	    fMVHistsByTPC["dqdx"][itpc].push_back(h);
-    }
+// 	for (auto h: tmphists)
+// 	    fMVHistsByTPC["dqdx"][itpc].push_back(h);
+//     }
+// #undef H1
+// #undef H2
 
 
-#undef H1
-#undef H2
     TH1* hists_corrected[NHists_dedx] = {};
 #define H1(name, title) hists_corrected[name] =				\
 	new TH2D(#name"_corr", Form("dQ/dx vs x%s Corrected;x [cm]",title), \
@@ -166,9 +210,10 @@ int DqDxProcessor::Initialize()
 
     for (auto h: hists_corrected)
 	fMVHists["dqdx_corr"].push_back(h);
-
 #undef H1
 #undef H2
+
+
     TH1* hists_dedx[NHists_dedx] = {};
 #define H1(name, title) hists_dedx[name] = new TH2D(#name, Form("dE/dx vs x%s;x [cm]",title), 400, -800, 800, 400, 0, 10 )
 #define H2(name, title) hists_dedx[name] = new TH2D(#name, Form("dE/dx vs x%s;t [ms]",title), 400, -5, 5, 400, 0, 10 )
@@ -184,55 +229,21 @@ int DqDxProcessor::Initialize()
 
     for (auto h: hists_dedx)
 	fMVHists["dedx"].push_back(h);
+#undef H1
+#undef H2
 
 
     //***** Input tree *****
     auto tree = new TChain("analysistree/anatree");
-    size_t size = fFHandler.attachFiles(tree, fIFName, fBatchNo, fNruns, fStartRun, fDataVersion);
+    size_t size = fFHandler.attachFiles(tree, fIFName, fBatchNo, fNruns, fStartRun, fDataVersion, fSource);
     anatree* evt = new anatree(tree);
 
     fTree = tree;
     fEvent = evt;
     fSize = size;
 
-    // allow only selected branches!
-    //
-    // This improves the speed of the tree processing. Any branch to
-    // be used needs to be added here, otherwise we don't get any data
-    // from it.
-    std::vector<TString> allowed = {
-	// "run",
-	// "event",
-    	// "geant_list_size",
-	// "inTPCActive",
-	// "Eng",
-	// "Mother",
-	// "TrackId",
-	// "pdg",
-	// "processname",
-	// "StartE_tpcAV",
-	// "StartPx_tpcAV",
-	// "StartPy_tpcAV",
-	// "StartPz_tpcAV",
-	// "StartP_tpcAV",
-	// "EndE_tpcAV",
-	// "EndPointx",
-	// "EndPointy",
-	// "EndPointz",
-	// "EndPointx_tpcAV",
-	// "EndPointy_tpcAV",
-	// "EndPointz_tpcAV",
-	// "pathlen",
-	"ntracks_pandoraTrack",
-	"ntrkhits_pandoraTrack",
-	"trkdqdx_pandoraTrack",
-	"trkdedx_pandoraTrack",
-	"trkxyz_pandoraTrack",
-	"trklen_pandoraTrack",
-	"trktpc_pandoraTrack"
-    };
     tree->SetBranchStatus("*", 0);
-    AnaTree::AllowBranches(tree, allowed);
+    AnaTree::AllowBranches(tree, fAllowed);
     tree->SetMakeClass(1);
 
     //***** Output file *****
@@ -257,20 +268,20 @@ int DqDxProcessor::Finalize()
     }
 
     fOutFile->cd();
-    for (auto tpcpair: fMVHistsByTPC) {
-	auto dir = fOutFile->GetDirectory(tpcpair.first);
-	dir->cd();
-	cout<<"Descending to directory "<<tpcpair.first<<endl;
-	for (auto histspair : tpcpair.second) {
-	    dir->mkdir(Form("TPC%d",histspair.first))->cd();
-	    for (auto h : histspair.second) {
-		// skip not filled hitograms
-		if (!h || h->GetEntries() == 0)
-		    continue;
-		h->Write(0, TObject::kOverwrite);
-	    }
-	}
-    }
+    // for (auto tpcpair: fMVHistsByTPC) {
+    // 	auto dir = fOutFile->GetDirectory(tpcpair.first);
+    // 	dir->cd();
+    // 	cout<<"Descending to directory "<<tpcpair.first<<endl;
+    // 	for (auto histspair : tpcpair.second) {
+    // 	    dir->mkdir(Form("TPC%d",histspair.first))->cd();
+    // 	    for (auto h : histspair.second) {
+    // 		// skip not filled hitograms
+    // 		if (!h || h->GetEntries() == 0)
+    // 		    continue;
+    // 		h->Write(0, TObject::kOverwrite);
+    // 	    }
+    // 	}
+    // }
 
 
     fOutFile->Close();
@@ -292,7 +303,7 @@ int DqDxProcessor::Process()
     auto hists_corrected = fMVHists["dqdx_corr"];
     auto hists_dedx = fMVHists["dedx"];
 
-    auto hists_bytpc = fMVHistsByTPC["dqdx"];
+    //auto hists_bytpc = fMVHistsByTPC["dqdx"];
 
     cout<<"Starting a loop over the tree"<<endl;
     int entries_processed = 0;
@@ -324,9 +335,7 @@ int DqDxProcessor::Process()
 	    // make a threshold on reco track length
 	    if (!SelectTrack(evt, itrack)) continue;
 
-	    if (!passed) passed = true;
-
-	    ++tracks_passing_selection;
+	    bool track_passed = false;
 
 	    // choose the best plane
 	    int best_plane = 0;
@@ -346,12 +355,16 @@ int DqDxProcessor::Process()
 		    nhits = MAX_TRACK_HITS;
 		Float_t* dqdx_arr = evt->trkdqdx_pandoraTrack[itrack][iplane];
 		Float_t* dedx_arr = evt->trkdedx_pandoraTrack[itrack][iplane];
-		Int_t* tpc_arr = evt->trktpc_pandoraTrack[itrack][iplane];
+		//Int_t* tpc_arr = evt->trktpc_pandoraTrack[itrack][iplane];
 		Float_t* xyz_arr = (Float_t*)evt->trkxyz_pandoraTrack[itrack][iplane];
 		for (int i = 0; i < nhits; ++i) {
+		    if (!SelectHit(evt, itrack, iplane, i)) continue;
+
+		    if (!track_passed) track_passed = true;
+
 		    double dqdx = dqdx_arr[i];
 		    double dedx = dedx_arr[i];
-		    int tpc = tpc_arr[i];
+		    //int tpc = tpc_arr[i];
 		    if ( dqdx != 0.) {
 			double x = xyz_arr[i*3];
 			double t = x * kXtoT;
@@ -364,13 +377,14 @@ int DqDxProcessor::Process()
 			    hists[Dqdx_vs_t]->Fill(t, dqdx);
 			}
 
-			int tpcx = tpc % 6;
+			// int tpcx = tpc % 6;
 
-			double dx = ( -1 + 2*(tpcx%2) )*(x - APA_X_POSITIONS[tpcx/2]);
+			int tpc = whichTPC(x) + 1;
+			double dx = ( -1 + 2*(tpc%2) )*(x - APA_X_POSITIONS[tpc/2]);
 			double dt = dx*kXtoT;
 
-			// fill hists by tpc
-			hists_bytpc[tpc][Dqdx_vs_x_plane0 + iplane]->Fill(dx, dqdx);
+			// // fill hists by tpc
+			// hists_bytpc[tpc][Dqdx_vs_x_plane0 + iplane]->Fill(dx, dqdx);
 
 			// do corrections, only within main TPCs
 			if ( x > APA_X_POSITIONS[0]
@@ -403,11 +417,36 @@ int DqDxProcessor::Process()
 		    }
 		}
 	    }
+	    if (track_passed) {
+		++tracks_passing_selection;
+		if (!passed) passed = true;
+
+#ifdef DEBUG
+		double start_x = evt->trkstartx_pandoraTrack[itrack];
+		double end_x = evt->trkendx_pandoraTrack[itrack];
+		cout<<""
+		    <<"Entry: "<<ientry
+		    <<", event: "<<evt->event
+		    <<", track: "<<itrack
+		    <<", track start x: "<<start_x
+		    <<", track end x: "<<end_x
+		    <<endl;
+#endif // DEBUG
+	    }
 
 	}// track loop
 
-	if (passed)
+	if (passed) {
 	    ++events_passing_selection;
+
+#ifdef DEBUG
+	    fMVHists["dqdx"][3]->Draw("colz");
+	    gPad->Modified();
+	    gPad->Update();
+	    getchar();
+	    fMVHists["dqdx"][3]->Reset();
+#endif // DEBUG
+	}
 
     }// tree entry loop
     cout<<"|"<<endl;
@@ -428,7 +467,12 @@ int DqDxProcessor::SelectEvent(anatree* evt)
 
 int DqDxProcessor::SelectTrack(anatree* evt, int itrack)
 {
-    return (evt->trklen_pandoraTrack[itrack] >= 300.); // at least 2-m long track
+    return (evt->trklen_pandoraTrack[itrack] >= 200.); // at least 2-m long track
+}
+
+int DqDxProcessor::SelectHit(anatree* evt, int itrack, int iplane, int ihit)
+{
+    return true;
 }
 
 
