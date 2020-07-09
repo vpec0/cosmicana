@@ -242,6 +242,9 @@ int DqDxProcessor::Initialize()
     fEvent = evt;
     fSize = size;
 
+    if (size == 0)
+	return 0;
+
     tree->SetBranchStatus("*", 0);
     AnaTree::AllowBranches(tree, fAllowed);
     tree->SetMakeClass(1);

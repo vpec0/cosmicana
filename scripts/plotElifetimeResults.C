@@ -7,7 +7,7 @@ plotElifetimeResults(const char* dataversion="v08_34_00",
 {
     //auto dataversion = "v08_50_00";
     TString base_dir = Form("plots/%s/elifetime/%s", dataversion, cut);
-    TString fname = Form("%s/%sbatch_2000*00%s_fits.root",
+    TString fname = Form("%s/%sbatch_*%s_fits.root",
 			 base_dir.Data(), prefix, suffix);
     auto tree = new TChain("elifetime");
 
