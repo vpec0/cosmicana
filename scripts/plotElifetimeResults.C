@@ -5,9 +5,11 @@ plotElifetimeResults(const char* dataversion="v08_34_00",
 		     const char* prefix = "",
 		     const char* suffix = "")
 {
+    gStyle->SetNdivisions(505, "y");
+
     //auto dataversion = "v08_50_00";
-    TString base_dir = Form("plots/%s/elifetime/%s", dataversion, cut);
-    TString fname = Form("%s/%sbatch_*%s_fits.root",
+    TString base_dir = Form("plots/%s/no_lt_diffusion_100_jobs/elifetime/%s", dataversion, cut);
+    TString fname = Form("%s/%sbatch_*0%s_fits.root",
 			 base_dir.Data(), prefix, suffix);
     auto tree = new TChain("elifetime");
 
@@ -19,7 +21,7 @@ plotElifetimeResults(const char* dataversion="v08_34_00",
 	for (int j = 0; j < 4; j++) {
 	    hists[i][j] = new TH1F( Form("h%d_%d", i, j),
 				    Form("Plane %d, Segment %d", i,j),
-				    100, 2.5,3.5 );
+				    200, 1.5,3.5 );
 	    tree->Draw(Form("tau_e[%d][%d]>>+h%d_%d", i, j, i, j));
 
 	    hists_err[i][j] = new TH1F( Form("herr%d_%d", i, j),
@@ -94,6 +96,19 @@ plotElifetimeResults(const char* dataversion="v08_34_00",
     hstddev->Draw("PEX0");
     c->SaveAs(Form("%s/%sstddev_lifetime%s_fits_%s.pdf",
 		   base_dir.Data(), prefix, suffix, dataversion));
+
+    // save versions without x-axis labels
+    hmean->GetXaxis()->SetLabelSize(0);
+    hmean->Draw("PEX0");
+    c->SaveAs(Form("%s/%smean_lifetime%s_fits_%s_noxlabels.pdf",
+		   base_dir.Data(), prefix, suffix, dataversion));
+
+    hstddev->GetXaxis()->SetLabelSize(0);
+    hstddev->Draw("PEX0");
+    c->SaveAs(Form("%s/%sstddev_lifetime%s_fits_%s_noxlabels.pdf",
+		   base_dir.Data(), prefix, suffix, dataversion));
+
+
 
     // write out all the cumulated histograms
     auto outf = TFile::Open(Form("%s/%slifetime%s_fits_result_hists_%s.root",

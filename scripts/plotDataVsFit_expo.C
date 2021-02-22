@@ -6,8 +6,10 @@ TGraphErrors* getResidSigmaNorm(TGraphErrors* gr);
 
 void SetSameYrange(TGraph** gr); // expects 3 pointers to the graphs
 
+void treatFits(TGraphErrors* gr);
 TCanvas* createCanvas(const char* name, const char* title);
 
+const double gXtoT = 1./160.563; // converts cm to ms, calculated for field 0.5kV/cm and temperature 87K
 
 void
 plotDataVsFit_expo(const char *fname, int batch, int part, const char* outpref = "")
@@ -39,20 +41,17 @@ plotDataVsFit_expo(const char *fname, int batch, int part, const char* outpref =
     auto c = createCanvas("expo_fit", "Expo Fit");
     // loop over 3 planes
     for (int iplane = 0; iplane < 3; iplane++) {
+	c->cd(iplane+1);
+
 	auto gr = (TGraphErrors*)f->Get(Form("%d/part%d/Dqdx_vs_x_plane%d_profile", batch, part, iplane));
 	if (iplane==0)
 	    gr->SetTitle(Form("Plane %d;;MPV [ADC]", iplane));
 	if (iplane==2)
 	    gr->SetTitle(";x [cm];");
 
-	for (int i =0; i < 4; i++) {
-	    auto fit = gr->GetFunction(Form("fit%d",i));
-	    fit->SetLineColor(kRed);
-	    fit->SetLineWidth(2);
-	}
-
-	c->cd(iplane+1);
 	gr->Draw("AP");
+	treatFits(gr);
+
 	graphs[iplane] = gr;
     }
     SetSameYrange(graphs);
@@ -333,6 +332,30 @@ void SetSameYrange(TGraph** gr)
     gPad->Update();
 }
 
+void treatFits(TGraphErrors* gr)
+{
+    // make the line more visible
+    for (int i =0; i < 4; i++) {
+	auto fit = gr->GetFunction(Form("fit%d",i));
+	fit->SetLineColor(kRed);
+	fit->SetLineWidth(2);
+    }
+
+    // create fit labels
+    for (int i =0; i < 4; i++) {
+	auto fit = gr->GetFunction(Form("fit%d",i));
+	double tau = 1./fit->GetParameter(1) * gXtoT;
+	double tau_err = fit->GetParError(1) * tau * tau/ gXtoT;
+	auto label = new TLatex(0.28+i*0.1475, 0.8*(1 - gPad->GetTopMargin()) + 0.2*gPad->GetBottomMargin(), Form("#splitline{%.3f}{#pm %.3f}", tau, tau_err));
+	label->SetNDC();
+	label->SetTextFont(43);
+	label->SetTextSize(12);
+	label->SetTextAlign(22);
+	label->Draw();
+    }
+
+
+}
 
 TCanvas* createCanvas(const char* name, const char* title)
 {

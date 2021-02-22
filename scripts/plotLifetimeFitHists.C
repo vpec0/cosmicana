@@ -1,5 +1,9 @@
 
 void plotLifetimeFitHists(const char* fname, const char* outpref) {
+    gStyle->SetStatW(0.3);
+    gStyle->SetStatH(0.4);
+    //gROOT->ForceStyle();
+
     auto f = TFile::Open(fname, "read");
 
     auto c = new TCanvas("c","", 2);

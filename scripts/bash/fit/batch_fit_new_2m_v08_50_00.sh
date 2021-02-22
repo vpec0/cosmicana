@@ -4,14 +4,14 @@ CUT=2m_track_cut
 
 data_version=v08_50_00
 
-base_dir=plots/$data_version/elifetime/$CUT
+base_dir=plots/$data_version/no_lt_diffusion_100_jobs/elifetime/$CUT
 outdir=$base_dir
-logdir=logs/$data_version/elifetime/$CUT
+logdir=logs/$data_version/no_lt_diffusion_100_jobs/elifetime/$CUT
 
 mkdir -p $outdir
 mkdir -p $logdir
 
-for batchno in 2000{31..40}00 ; do
+for batchno in 60001000 ; do #2000{31..40}00 ; do
     {
 	for part in {0..9} ; do
 	    echo "Part $part:"
