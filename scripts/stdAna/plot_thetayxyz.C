@@ -4,46 +4,46 @@
 #include "anatree.h"
 
 
-void plot_thetaxzyz(const char* outpref, const char* fname, size_t batch, size_t nruns, size_t startrun = 0,
+void plot_thetayxyz(const char* outpref, const char* fname, size_t batch, size_t nruns, size_t startrun = 0,
 		    const char* version = "", const char* source = "")
 {
     // Histograms
     vector<TH1*> hists;
-    auto hTrue = new TH2F("hTrue", "True muon trajectory;#theta_{XZ} [#circ];#theta_{YZ} [#circ]",
+    auto hTrue = new TH2F("hTrue", "True muon trajectory;#theta_{YX} [#circ];#theta_{YZ} [#circ]",
 			  360, -180, 180,
 			  360, -180, 180);
     hists.push_back(hTrue);
 
-    auto hReco = new TH2F("hReco", "Reconstructed track;#theta_{XZ} [#circ];#theta_{YZ} [#circ]",
+    auto hReco = new TH2F("hReco", "Reconstructed track;#theta_{YX} [#circ];#theta_{YZ} [#circ]",
 			  360, -180, 180,
 			  360, -180, 180);
     hists.push_back(hReco);
 
     auto hRecoDownward = new TH2F("hRecoDownward", "#splitline{Reconstructed track}{(corrected downward)}"
-				  ";#theta_{XZ} [#circ];#theta_{YZ} [#circ]",
+				  ";#theta_{YX} [#circ];#theta_{YZ} [#circ]",
 				  360, -180, 180,
 				  360, -180, 180);
     hists.push_back(hRecoDownward);
 
     TH2F* hRecoHitsDownward[3] = {new TH2F("hRecoHitsDownward_plane0", "#splitline{Reconstructed track hits Plane 0}{(corrected downward)}"
-					   ";#theta_{XZ} [#circ];#theta_{YZ} [#circ]",
+					   ";#theta_{YX} [#circ];#theta_{YZ} [#circ]",
 					   360, -180, 180,
 					   360, -180, 180),
 				  new TH2F("hRecoHitsDownward_plane1", "#splitline{Reconstructed track hits Plane 1}{(corrected downward)}"
-					   ";#theta_{XZ} [#circ];#theta_{YZ} [#circ]",
+					   ";#theta_{YX} [#circ];#theta_{YZ} [#circ]",
 					   360, -180, 180,
 					   360, -180, 180),
 				  new TH2F("hRecoHitsDownward_plane2", "#splitline{Reconstructed track hits Plane 2}{(corrected downward)}"
-					   ";#theta_{XZ} [#circ];#theta_{YZ} [#circ]",
+					   ";#theta_{YX} [#circ];#theta_{YZ} [#circ]",
 					   360, -180, 180,
 					   360, -180, 180) };
     for (int iplane = 0; iplane < 3; ++iplane)
 	hists.push_back(hRecoHitsDownward[iplane]);
 
-    auto hRecoTrueDownward_xz = new TH1F("hRecoTrueDownward_xz", "#splitline{Reconstructed track vs True - #theta_{xz}}{(corrected downward)}"
-				  ";#Delta_{rec-true}(#theta_{XZ}) [#circ];",
+    auto hRecoTrueDownward_yx = new TH1F("hRecoTrueDownward_yx", "#splitline{Reconstructed track vs True - #theta_{yx}}{(corrected downward)}"
+				  ";#Delta_{rec-true}(#theta_{YX}) [#circ];",
 				  360, -180, 180);
-    hists.push_back(hRecoTrueDownward_xz);
+    hists.push_back(hRecoTrueDownward_yx);
     auto hRecoTrueDownward_yz = new TH1F("hRecoTrueDownward_yz", "#splitline{Reconstructed track vs True - #theta_{yz}}{(corrected downward)}"
 				  ";#Delta_{rec-true}(#theta_{YZ}) [#circ];",
 				  360, -180, 180);
@@ -68,13 +68,10 @@ void plot_thetaxzyz(const char* outpref, const char* fname, size_t batch, size_t
 	"Mother",
 	"inTPCActive",
 	"pathlen",
-	"theta_xz", // likely direction at the start
-	"theta_yz",
 	"StartPx_tpcAV",
 	"StartPy_tpcAV",
 	"StartPz_tpcAV",
 	"ntracks_pandoraTrack",
-	"trkthetaxz_pandoraTrack",
 	"trkthetayz_pandoraTrack",
 	"trkstartdcosx_pandoraTrack",
 	"trkstartdcosy_pandoraTrack",
@@ -112,7 +109,12 @@ void plot_thetaxzyz(const char* outpref, const char* fname, size_t batch, size_t
 	    if ( !evt->inTPCActive[i] ) break; // must hit TPC
 	    if ( evt->pathlen[i] < 200. ) break; // true path length in TPC > 2 m
 
-	    hTrue->Fill(evt->theta_xz[i]*toDeg, evt->theta_yz[i]*toDeg);
+	    TVector3 true_dir(evt->StartPx_tpcAV[i], evt->StartPy_tpcAV[i], evt->StartPz_tpcAV[i]);
+	    true_dir.SetMag(1.);
+	    double true_yx = TMath::ATan2(true_dir.Y(), true_dir.X()) * toDeg;
+	    double true_yz = TMath::ATan2(true_dir.Y(), true_dir.Z()) * toDeg;
+
+	    hTrue->Fill(true_yx, true_yz);
 	    break;
 	}
 
@@ -124,20 +126,21 @@ void plot_thetaxzyz(const char* outpref, const char* fname, size_t batch, size_t
 		break;
 	    }
 	    if ( evt->trklen_pandoraTrack[i] < 200. ) continue;
-	    double xz = evt->trkthetaxz_pandoraTrack[i]*toDeg;
+	    double yx = TMath::ATan2(evt->trkstartdcosy_pandoraTrack[i],
+				     evt->trkstartdcosx_pandoraTrack[i])*toDeg;
 	    double yz = evt->trkthetayz_pandoraTrack[i]*toDeg;
 
-	    hReco->Fill(xz, yz);
+	    hReco->Fill(yx, yz);
 
 	    if (yz > 0.) {
 		yz -= 180.;
-		xz -= (xz > 0.) ? 180. : -180.;
+		yx -= (yx > 0.) ? 180. : -180.;
 	    }
-	    hRecoDownward->Fill(xz, yz);
+	    hRecoDownward->Fill(yx, yz);
 	    // fill hit counts by plane
 	    for (int iplane = 0; iplane < 3; ++iplane) {
 		if (evt->ntrkhits_pandoraTrack[i][iplane] > 0)
-		    hRecoHitsDownward[iplane]->Fill(xz, yz, evt->ntrkhits_pandoraTrack[i][iplane]);
+		    hRecoHitsDownward[iplane]->Fill(yx, yz, evt->ntrkhits_pandoraTrack[i][iplane]);
 	    }
 
 	    // angular residuals
@@ -149,16 +152,16 @@ void plot_thetaxzyz(const char* outpref, const char* fname, size_t batch, size_t
 		if ( evt->TrackId[idx] == geantid ) break;
 	    TVector3 true_dir(evt->StartPx_tpcAV[idx], evt->StartPy_tpcAV[idx], evt->StartPz_tpcAV[idx]);
 	    true_dir.SetMag(1.);
-	    double true_xz = TMath::ATan2(true_dir.X(), true_dir.Z()) * toDeg;
+	    double true_yx = TMath::ATan2(true_dir.Y(), true_dir.X()) * toDeg;
 	    double true_yz = TMath::ATan2(true_dir.Y(), true_dir.Z()) * toDeg;
 
 	    // cout << "TrackID: " << geantid <<", pdg: " << pdg << ", idx: " << idx
-	    // 	 << ", true xz: " << true_xz
+	    // 	 << ", true yx: " << true_yx
 	    // 	 << ", true yz: " << true_yz
-	    // 	 << ", reco xz: " << xz
+	    // 	 << ", reco yx: " << yx
 	    // 	 << ", reco yz: " << yz << endl;
 
-	    hRecoTrueDownward_xz->Fill(xz - true_xz);
+	    hRecoTrueDownward_yx->Fill(yx - true_yx);
 	    hRecoTrueDownward_yz->Fill(yz - true_yz);
 
 	    // direction difference
@@ -187,8 +190,8 @@ void plot_thetaxzyz(const char* outpref, const char* fname, size_t batch, size_t
     // hRecoDownward->Draw("colz");
     // c->SaveAs(outfname + "theta_reco_downward.pdf");
 
-    // hRecoTrueDownward_xz->Draw();
-    // c->SaveAs(outfname + "theta_reco_vs_true_xz_downward.pdf");
+    // hRecoTrueDownward_yx->Draw();
+    // c->SaveAs(outfname + "theta_reco_vs_true_yx_downward.pdf");
     // hRecoTrueDownward_yz->Draw();
     // c->SaveAs(outfname + "theta_reco_vs_true_yz_downward.pdf");
 
@@ -196,7 +199,7 @@ void plot_thetaxzyz(const char* outpref, const char* fname, size_t batch, size_t
     // c->SaveAs(outfname + "theta_reco_vs_true_downward.pdf");
 
     // save hists into a root file
-    auto outf = TFile::Open(outfname + "theta_hists.root", "recreate");
+    auto outf = TFile::Open(outfname + "thetayxyz_hists.root", "recreate");
 
     for (auto h : hists)
 	h->Write();
