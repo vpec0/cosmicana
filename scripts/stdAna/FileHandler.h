@@ -25,6 +25,9 @@ public:
 	    if (!strcmp("kumar", source)) {
 		topdir = "/data/kumar/dune/cosmic/largeproduction/";
 		topdir.Append(data_version).Append("/data/");
+	    } else if (!strcmp("viktor", source)) {
+		topdir = "/data/vpec/dune/cosmics/";
+		topdir.Append(data_version).Append("/");
 	    } else if (!strcmp("fnal", source)) {
 		topdir = "xroot://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/dune/persistent/users/calibration/cosmic_muons/sheffield_prod/dunetpc_";
 		topdir.Append(data_version).Append("/");

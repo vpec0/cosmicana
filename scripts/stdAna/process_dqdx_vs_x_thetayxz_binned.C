@@ -131,6 +131,14 @@ void process_dqdx_vs_x_thetayxz_binned(const char* fname = "", const char* outpr
 		double theta_xz = TMath::ATan2(tmpdir.X(), tmpdir.Z()) * toDeg;
 		double theta_y = TMath::ACos(tmpdir.Y()) * toDeg;
 
+		// first need to correct track direction, assuming all tracks should be downwards going!
+		if (dir.Y() > 0.) {
+		    theta_y = 180. - theta_y;
+		    theta_xz -= (theta_xz > 0.) ? 180. : -180.;
+		}
+
+
+		// assigning hits to individual track direction bins
 		int bin = 3; // the rest
 		if (theta_y > 160.) bin = 0; // vertical
 		else if (abs(abs(theta_xz) - 90.) < 20.) bin = 1; // pointed towards APA
