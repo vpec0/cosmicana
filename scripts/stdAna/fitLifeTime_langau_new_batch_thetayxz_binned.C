@@ -313,22 +313,6 @@ TFitResultPtr FitLangau(TH1* h, double &mpv)
 
     //fit = new TF1("gaus", "gaus");
 
-    auto fit = new TF1("langaus", langaufun, 0., 500., 4);
-    fit->SetParNames("Width","MP","Area","GSigma");
-    double norm = h->GetEntries() * h->GetBinWidth(1);
-
-
-    double sv[4] = {10., 400., 300000., 10.}; // starting values for parameters: Landau scale, Landau MPV, Norm, Gauss sigma
-    sv[1] = maxloc;
-    sv[2] = norm;
-    fit->SetParameters(sv);
-
-    // set limits to Gaussian and Landau widths
-    fit->SetParLimits(0, 5., 30.);
-    fit->SetParLimits(3, 5., 30.);
-
-    //fit = new TF1("landau", "landau");
-
     double dlow = 0.6; //30.;
     double dhi = 0.25; //70.;
     double low, hi;
@@ -350,6 +334,21 @@ TFitResultPtr FitLangau(TH1* h, double &mpv)
     hi = h->GetBinLowEdge(binhi);
     // low = maxloc - dlow;
     // hi = maxloc + dhi;
+
+    auto fit = new TF1("langaus", langaufun, 0., 500., 4);
+    fit->SetParNames("Width","MP","Area","GSigma");
+
+    double norm = h->Integral(binlow, binhi) * h->GetBinWidth(1) * 1.5;
+    double sv[4] = {10., 400., 300000., 10.}; // starting values for parameters: Landau scale, Landau MPV, Norm, Gauss sigma
+    sv[1] = maxloc;
+    sv[2] = norm;
+    fit->SetParameters(sv);
+
+    // set limits to Gaussian and Landau widths
+    fit->SetParLimits(0, 5., 30.);
+    fit->SetParLimits(3, 5., 30.);
+
+    //fit = new TF1("landau", "landau");
 
     ///>>>> Do the fit <<<<
     auto result = h->Fit(fit, "LSQ", "", low, hi);

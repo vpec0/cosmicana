@@ -8,7 +8,7 @@ void print_thetayxz_binned_fitresults(const char* fname, const char *outpref)
 {
     gStyle->SetHistFillStyle(0);
     gStyle->SetMarkerSize(1.);
-    gStyle->SetPadGridY();
+    gStyle->SetPadGridY(1);
 
     auto f = TFile::Open(fname, "read");
 
