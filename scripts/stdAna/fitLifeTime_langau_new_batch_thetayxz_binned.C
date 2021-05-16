@@ -108,7 +108,7 @@ fitLifeTime_langau_new_batch_thetayxz_binned(int batchpart,
 	    h->SetName(Form("%s_%d", h3d->GetName(), ibin));
 
 	    // rebin y axis (dQ/dx)
-	    h->Rebin2D(4,4);
+	    h->Rebin2D(4,2);
 	    h->Write();
 
 	    auto plane_dir = gDirectory;
@@ -307,9 +307,18 @@ int getMpv(TH1* h, double& mpv, double& err)
 
 TFitResultPtr FitLangau(TH1* h, double &mpv)
 {
-    h->SetAxisRange(100,400);
+    // first find local maximum with largest dQ/dx
+    auto sp = new TSpectrum(4);
+    h->SetAxisRange(100,450);
+    int npeaks = sp->Search(h, 2, "nobackground", 0.3);
     int maxbin = h->GetMaximumBin();
     double maxloc = h->GetBinCenter(maxbin);
+    FOR(i, npeaks) {
+	if (sp->GetPositionX()[i] > maxloc) {
+	    maxloc = sp->GetPositionX()[i];
+	    maxbin = h->FindBin(maxloc);
+	}
+    }
 
     //fit = new TF1("gaus", "gaus");
 
@@ -351,7 +360,7 @@ TFitResultPtr FitLangau(TH1* h, double &mpv)
     //fit = new TF1("landau", "landau");
 
     ///>>>> Do the fit <<<<
-    auto result = h->Fit(fit, "LSQ", "", low, hi);
+    auto result = h->Fit(fit, "SQ", "", low, hi);
     if (!gDoMPV)
 	mpv = fit->GetMaximumX(result->Parameter(1), result->Parameter(1) + result->Parameter(3));
     else
