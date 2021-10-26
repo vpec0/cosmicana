@@ -44,6 +44,9 @@ void print_thetayxz_binned_fitresults(const char* fname, const char *outpref)
 	    hists_tau[iseg]->SetBinError(ibin+1, tau_e_error[2][ibin][iseg]);
 	    hists_qcqa[iseg]->SetBinContent(ibin+1, qcqa[2][ibin][iseg]);
 	    hists_qcqa[iseg]->SetBinError(ibin+1, qcqa_error[2][ibin][iseg]);
+
+	    cout<<"Segment "<<iseg<<" bin: "<<ibin<<" : "
+		<<tau_e[2][ibin][iseg]<<" pm "<<tau_e_error[2][ibin][iseg]<<endl;
 	}
     }
 
@@ -67,7 +70,8 @@ void print_thetayxz_binned_fitresults(const char* fname, const char *outpref)
     auto c = new TCanvas("c", "", 1);
     c->SetBottomMargin(0.2);
 
-    hs_tau->SetMinimum(2.3);
+    hs_tau->SetMaximum(3.2);
+    hs_tau->SetMinimum(2.1);
     hs_qcqa->SetMinimum(0.36);
 
     hs_tau->Draw("PEX0 nostack");
