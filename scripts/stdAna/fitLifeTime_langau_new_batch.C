@@ -98,13 +98,15 @@ fitLifeTime_langau_new_batch(int batchno, int batchpart,
 	auto h = (TH2D*) f->Get(histname);
 
 	// rebin input histogram
-	h->Rebin2D(5,5);
+	h->Rebin2D(2,2);
 
 	// create plane directory
 	TString plane_dir = Form("plane%d", iplane);
 	if (!batch_part_dir->GetDirectory(plane_dir))
 	    batch_part_dir->mkdir(plane_dir);
 	batch_part_dir->cd(plane_dir);
+
+	// run the slicing and fitting
 	auto gr = Fitter::sliceAndFit(h);
 	batch_part_dir->cd();
 

@@ -34,10 +34,10 @@ void print_thetayxz_binned_fitresults(const char* fname, const char *outpref)
     TH1F* hists_qcqa[4];
     FOR(iseg, 4) {
 	hists_tau[iseg] = new TH1F(Form("hTau_%d", iseg),
-				   Form("Segment %d; Direction bin;#tau_{e} [ms]", iseg),
+				   Form("Plane %d; Direction bin;#tau_{e} [ms]", iplane),
 				   4, 0, 4);
 	hists_qcqa[iseg] = new TH1F(Form("hQcqa_%d", iseg),
-				   Form("Segment %d; Direction bin; Q_{C}/Q_{A}", iseg),
+				   Form("Segment %d; Direction bin; Q_{C}/Q_{A}", iplane),
 				   4, 0, 4);
 	FOR(ibin, 4) {
 	    hists_tau[iseg]->SetBinContent(ibin+1, tau_e[2][ibin][iseg]);

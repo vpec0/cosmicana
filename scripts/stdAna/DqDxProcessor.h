@@ -11,7 +11,7 @@ class DqDxProcessor
 public:
     DqDxProcessor(const char* fname = "", const char* outpref = "",
 		  int batchNo = 20002100, size_t Nruns = 10, size_t startRun = 0,
-		  const char* data_version = "v08_34_00", const char* source = "");
+		  const char* data_version = "v08_34_00", const char* source = "", const char* topdir = "");
     ~DqDxProcessor(){}
 
     int Initialize();
@@ -43,6 +43,7 @@ private:
     TString fIFName;
     TString fOutPref;
     TString fSource;
+    TString fTopdir;
 
     TFile* fOutFile;
 
@@ -92,13 +93,14 @@ private:
 DqDxProcessor::DqDxProcessor(const char* fname = "", const char* outpref = "",
 			     int batchNo = 20002100, size_t Nruns = 10, size_t startRun = 0,
 			     const char* data_version = "v08_34_00",
-			     const char* source = ""):
+			     const char* source = "", const char* topdir = ""):
     fTree(0),
     fEvent(0),
     fSize(0),
     fIFName(fname),
     fOutPref(outpref),
     fSource(source),
+    fTopdir(topdir),
     fOutFile(0),
     fBatchNo(batchNo),
     fNruns(Nruns),
@@ -235,7 +237,7 @@ int DqDxProcessor::Initialize()
 
     //***** Input tree *****
     auto tree = new TChain("analysistree/anatree");
-    size_t size = fFHandler.attachFiles(tree, fIFName, fBatchNo, fNruns, fStartRun, fDataVersion, fSource);
+    size_t size = fFHandler.attachFiles(tree, fIFName, fBatchNo, fNruns, fStartRun, fDataVersion, fSource, fTopdir);
     anatree* evt = new anatree(tree);
 
     fTree = tree;

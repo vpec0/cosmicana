@@ -161,47 +161,53 @@ int Fitter::getMpv(TH1* h, double& mpv, double& err)
 
 TFitResultPtr Fitter::FitLangau(TH1* h, double &mpv)
 {
-    // first find local maximum with largest dQ/dx
-    auto sp = new TSpectrum(4);
     h->SetAxisRange(100,450);
-    int npeaks = sp->Search(h, 2, "nobackground", 0.3);
-    int maxbin = h->GetMaximumBin();
-    double maxloc = h->GetBinCenter(maxbin);
+    // make rebinned copy of the histogram to make faster peak search and a pre-fit
+    auto hcopy = (TH1*)h->Clone("tmpclone");
+    const int REBIN = 4;
+    hcopy->Rebin(REBIN);
+
+    // first find local maximum with largest dQ/dx
+    //   - this is sensitive to secondary peaks due to fluctuations
+    auto sp = new TSpectrum(4);
+    int npeaks = sp->Search(hcopy, 2, "nobackground", 0.4);
+    int maxbin = hcopy->GetMaximumBin();
+    double maxloc = hcopy->GetBinCenter(maxbin);
     FOR(i, npeaks) {
 	if (sp->GetPositionX()[i] > maxloc) {
 	    maxloc = sp->GetPositionX()[i];
-	    maxbin = h->FindBin(maxloc);
+	    maxbin = hcopy->FindBin(maxloc);
 	}
     }
 
     //fit = new TF1("gaus", "gaus");
 
-    double dlow = 0.6; //30.;
-    double dhi = 0.25; //70.;
+    double dlow = 0.3; //0.6; //30.;
+    double dhi = 0.2; //0.25; //70.;
     double low, hi;
 
     // find lower and upper bounds
-    int nbins = h->GetNbinsX();
+    int nbins = hcopy->GetNbinsX();
     int binlow = maxbin - 1;
-    double maxval = h->GetBinContent(maxbin);
+    double maxval = hcopy->GetBinContent(maxbin);
     for (; binlow > 0; --binlow) {
-	if (h->GetBinContent(binlow) < maxval*dlow) break;
+	if (hcopy->GetBinContent(binlow) < maxval*dlow) break;
     }
     binlow++;
     int binhi = maxbin - 1;
     for (; binhi < nbins; ++binhi) {
-	if (h->GetBinContent(binhi) < maxval*dhi) break;
+	if (hcopy->GetBinContent(binhi) < maxval*dhi) break;
     }
 
-    low = h->GetBinLowEdge(binlow);
-    hi = h->GetBinLowEdge(binhi);
+    low = hcopy->GetBinLowEdge(binlow);
+    hi = hcopy->GetBinLowEdge(binhi);
     // low = maxloc - dlow;
     // hi = maxloc + dhi;
 
     auto fit = new TF1("langaus", langaufun, 0., 500., 4);
     fit->SetParNames("Width","MP","Area","GSigma");
 
-    double norm = h->Integral(binlow, binhi) * h->GetBinWidth(1) * 1.5;
+    double norm = hcopy->Integral(binlow, binhi) * hcopy->GetBinWidth(1) * 1.5;
     double sv[4] = {10., 400., 300000., 10.}; // starting values for parameters: Landau scale, Landau MPV, Norm, Gauss sigma
     sv[1] = maxloc;
     sv[2] = norm;
@@ -214,7 +220,34 @@ TFitResultPtr Fitter::FitLangau(TH1* h, double &mpv)
     //fit = new TF1("landau", "landau");
 
     ///>>>> Do the fit <<<<
-    auto result = h->Fit(fit, "SQ", "", low, hi);
+
+    // do a faster prefit - make a rebinned histogram
+    auto result = hcopy->Fit(fit, "SQ", "", low, hi);
+
+    if (result->IsValid()) {
+    	// recalculate fit range
+    	double mean = fit->GetParameter(1);
+    	double sigma0 = fit->GetParameter(0);
+    	double sigma3 = fit->GetParameter(3);
+
+    	double sigma = sigma0*sigma0 + sigma3*sigma3;
+    	sigma = sqrt(sigma);
+    	// cout<<"Landau sigma: "<<sigma0<<endl
+    	// 	<<"Gauss  sigma: "<<sigma3<<endl
+    	// 	<<"total  width: "<<sigma<<endl;
+
+    	low = mean - 2.*sigma;
+    	hi = mean + 5.*sigma;
+    }
+    else {
+    	fit->SetParameters(sv);
+    }
+    delete hcopy;
+
+    // account for different bin widths in the original histogram and the copy
+    fit->SetParameter(2, fit->GetParameter(2)/REBIN);
+
+    result = h->Fit(fit, "SQL", "", low, hi);
     if (!gDoMPV)
 	mpv = fit->GetMaximumX(result->Parameter(1), result->Parameter(1) + result->Parameter(3));
     else
