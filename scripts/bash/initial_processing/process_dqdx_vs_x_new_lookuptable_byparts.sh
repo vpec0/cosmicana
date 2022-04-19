@@ -12,10 +12,12 @@ data_type=""
 NPARTS=100
 RUNS_PER_PART=1
 
+DEVDIR=$HOME/dune/cosmics/cosmicana
+DATADIR=/mnt/nfs17/pec/dune/cosmics/lookuptable/dunetpc_$data_version
 
 TOPDIR=data2
-SCRIPT_NAME=scripts/stdAna/process_dqdx_vs_x_new.C
-OUTPUTDIR=plots/$data_version/lookuptable
+SCRIPT_NAME=$DEVDIR/scripts/stdAna/process_dqdx_vs_x_new.C
+OUTPUTDIR=$DATADIR/dqdxplots
 LOGDIR=logs/$data_version/lookuptable
 
 MAX_JOBS=10

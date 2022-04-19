@@ -321,7 +321,12 @@ int DqDxProcessor::Process()
     //size = 50000;
     cout<<"|                                                  |\r|";
     size_t ientry = 0;
+    // cout<<">>> Trying to read tree entry: "<<endl;
+    tree->GetEntry(0);
+    // cout<<">>> before loop"<<endl;
     while ( tree->GetEntry(ientry++) ) {
+	// cout<<">>> inside loop"<<endl;
+
 	// print progress
 	if ( (ientry)%fiftieth == 0) {
 	    cout<<"-";

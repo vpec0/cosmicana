@@ -24,7 +24,11 @@ public:
 	    topdir.Append(data_version).Append("/");
 	    if (strcmp("", in_topdir)) {
 		topdir = in_topdir;
-		topdir.Append("/dunetpc_").Append(data_version).Append("/");
+		if (strcmp("", data_version)) {
+		    cout<<"Appending version: "<<data_version<<endl;
+		    topdir.Append("/dunetpc_").Append(data_version);
+		}
+		topdir.Append("/");
 	    } else if (!strcmp("kumar", source)) {
 		topdir = "/data/kumar/dune/cosmic/largeproduction/";
 		topdir.Append(data_version).Append("/data/");
@@ -36,7 +40,7 @@ public:
 		topdir.Append(data_version).Append("/");
 	    }
 	    topdir.Append(batch + "/");
-	    cout<<"Batch directory "<<topdir<<endl;
+	    cout<<"Batch directory: "<<topdir<<endl;
 	    for (size_t j = 0; j<Nruns; j++) {
 		TString runNo = Form("%lu", batchNo + j + startRun);
 		TString fname = topdir + runNo + "/MUSUN_dunefd_" + runNo + "*_ana.root";
