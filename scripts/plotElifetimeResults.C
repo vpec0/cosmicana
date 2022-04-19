@@ -1,5 +1,14 @@
 #define NOMINAL_LIFETIME 20.
 
+static TString gOutpref;
+
+enum {
+    kWithLabels = 0,
+    kNoLabels = 1
+};
+
+void draw_hist(TH1* h, TString hname, const int with_labels);
+void draw_means(TH1* h);
 
 void
 plotElifetimeResults(const char* fname, const char* outpref)
@@ -8,6 +17,9 @@ plotElifetimeResults(const char* fname, const char* outpref)
 // 		     const char* prefix = "",
 // 		     const char* suffix = "")
 {
+    gOutpref = outpref;
+
+
     gStyle->SetNdivisions(505, "y");
 
     //auto dataversion = "v08_50_00";
@@ -130,38 +142,17 @@ plotElifetimeResults(const char* fname, const char* outpref)
 	ax_stddev->SetBinLabel(i+1, vlabels.at(i));
     }
 
-    hmean->LabelsOption("v");
-    hmean->Draw("PEX0");
-    c->SaveAs(Form("%smean_lifetime_fits.pdf", outpref));
+    vector< pair<TH1*, TString> > to_draw;
+    to_draw.push_back(make_pair(hmean,       "mean_lifetime"));
+    to_draw.push_back(make_pair(hstddev,     "stddev_lifetime"));
+    to_draw.push_back(make_pair(hqcqamean,   "mean_qcqa"));
+    to_draw.push_back(make_pair(hqcqastddev, "stddev_qcqa"));
 
-    hstddev->LabelsOption("v");
-    hstddev->Draw("PEX0");
-    c->SaveAs(Form("%sstddev_lifetime_fits.pdf", outpref));
+    for (auto hpair: to_draw) {
+	draw_hist(hpair.first, hpair.second, kWithLabels);
+	draw_hist(hpair.first, hpair.second, kNoLabels);
+    }
 
-    hqcqamean->LabelsOption("v");
-    hqcqamean->Draw("PEX0");
-    c->SaveAs(Form("%smean_qcqa_fits.pdf", outpref));
-
-    hqcqastddev->LabelsOption("v");
-    hqcqastddev->Draw("PEX0");
-    c->SaveAs(Form("%sstddev_qcqa_fits.pdf", outpref));
-
-    // save versions without x-axis labels
-    hmean->GetXaxis()->SetLabelSize(0);
-    hmean->Draw("PEX0");
-    c->SaveAs(Form("%smean_lifetime_fits_noxlabels.pdf", outpref));
-
-    hstddev->GetXaxis()->SetLabelSize(0);
-    hstddev->Draw("PEX0");
-    c->SaveAs(Form("%sstddev_lifetime_fits_noxlabels.pdf", outpref));
-
-    hqcqamean->GetXaxis()->SetLabelSize(0);
-    hqcqamean->Draw("PEX0");
-    c->SaveAs(Form("%smean_qcqa_fits_noxlabels.pdf", outpref));
-
-    hqcqastddev->GetXaxis()->SetLabelSize(0);
-    hqcqastddev->Draw("PEX0");
-    c->SaveAs(Form("%sstddev_qcqa_fits_noxlabels.pdf", outpref));
 
 
     // write out all the cumulated histograms
@@ -177,4 +168,51 @@ plotElifetimeResults(const char* fname, const char* outpref)
     }
 
     outf->Close();
+}
+
+
+void draw_hist(TH1* h, TString hname, const int with_labels)
+{
+    h->LabelsOption("v");
+    if (with_labels == kNoLabels)
+	h->GetXaxis()->SetLabelSize(0);
+
+    h->Draw("PEX0");
+
+    draw_means(h);
+
+    if (with_labels == kWithLabels)
+	gPad->SaveAs(Form("%s%s_fits.pdf", gOutpref.Data(), hname.Data()));
+    else if (with_labels == kNoLabels)
+	gPad->SaveAs(Form("%s%s_fits_noxlabels.pdf", gOutpref.Data(), hname.Data()));
+}
+
+void draw_means(TH1* h)
+{
+    int nbins = h->GetNbinsX();
+    for (int i = 0; i < 3; ++i) {
+	double mean = 0.;
+	double weight = 0.;
+	for (int j = 0; j < 4; ++j) {
+	    mean += h->GetBinContent(i*4+j+1) / h->GetBinError(i*4+j+1);
+	    weight += 1/h->GetBinError(i*4+j+1);
+	}
+	mean /= weight;
+	double low = h->GetBinLowEdge(i*4+1);
+	double hi = h->GetBinLowEdge((i+1)*4+1);
+	auto line = new TLine(low, mean, hi, mean);
+	line->SetLineColor(kRed);
+	line->Draw();
+
+	// draw the value and its error
+	gPad->Update();
+	// double up = h->GetYaxis()->GetXmax();
+	double up = gPad->GetUymax();
+	double down = gPad->GetUymin();
+
+	double x = (low + hi) * 0.5;
+	auto tt = new TText(x, up + 0.08*(up-down), Form("%.3g", mean));
+	tt->SetTextAlign(21);
+	tt->Draw();
+    }
 }
