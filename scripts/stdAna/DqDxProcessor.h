@@ -18,6 +18,9 @@ public:
     int Process();
     int Finalize();
 
+protected:
+    virtual TTree* findInputTree();
+
 private:
     virtual int SelectEvent(anatree* evt);
     virtual int SelectTrack(anatree* evt, int itrack);
@@ -34,7 +37,7 @@ protected:
 
     std::vector<TString> fAllowed;
 
-private:
+protected:
     TChain* fTree;
     anatree* fEvent;
 
@@ -235,21 +238,8 @@ int DqDxProcessor::Initialize()
 #undef H2
 
 
-    //***** Input tree *****
-    auto tree = new TChain("analysistree/anatree");
-    size_t size = fFHandler.attachFiles(tree, fIFName, fBatchNo, fNruns, fStartRun, fDataVersion, fSource, fTopdir);
-    anatree* evt = new anatree(tree);
-
-    fTree = tree;
-    fEvent = evt;
-    fSize = size;
-
-    if (size == 0)
-	return 0;
-
-    tree->SetBranchStatus("*", 0);
-    AnaTree::AllowBranches(tree, fAllowed);
-    tree->SetMakeClass(1);
+    //**** Input tree ****
+    findInputTree();
 
     //***** Output file *****
     fOutFile = TFile::Open(Form("%sanahists.root", fOutPref.Data()), "recreate");
@@ -257,8 +247,42 @@ int DqDxProcessor::Initialize()
     return fOutFile->IsOpen();
 }
 
+TTree* DqDxProcessor::findInputTree()
+{
+    if (fIFName.Length() && fStartRun && fNruns) {
 
+	TString baseifname(fIFName);
+	baseifname.ReplaceAll( "{batch}", Form("%ld", (fStartRun/100)*100) );
 
+	//***** Input tree *****
+	auto tree = new TChain("analysistree/anatree");
+	size_t size = 0;
+	for (int i = 0; i < fNruns; ++i) {
+	    TString ifname(baseifname);
+	    ifname.ReplaceAll("{run}", Form("%ld", fStartRun + i) );
+	    cout<<"Attaching file "<<ifname<<endl;
+	    size += tree->Add(ifname);
+	}
+	cout<<size<<" number of entries attached."<<endl;
+
+	anatree* evt = new anatree(tree);
+
+	fTree = tree;
+	fEvent = evt;
+	fSize = size;
+
+	if (size == 0)
+	    return 0;
+
+	tree->SetBranchStatus("*", 0);
+	AnaTree::AllowBranches(tree, fAllowed);
+	tree->SetMakeClass(1);
+
+	return tree;
+    }
+
+    return 0;
+}
 int DqDxProcessor::Finalize()
 {
     fOutFile->cd();

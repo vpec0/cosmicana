@@ -34,6 +34,7 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 	Phi_fnal,
 	Phi_east,
 	Theta,
+	cosTheta,
 	Path_primary,
 	Path_secondary,
 	Eloss,
@@ -75,7 +76,8 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 
     H1(Phi_fnal, "Azimuth angle from direction to FNAL;#phi_{FNAL} [#circ]", 360, 0, 360); // from -Z axis, clock-wise in XZ plane
     H1(Phi_east, "Azimuth angle from east direction;#phi_{east} [#circ]", 360, 0, 360); // from -Z axis, clock-wise in XZ plane
-    H1(Theta, "Zenith angle;cos(#theta)", 200, -1, 1); // from -Z axis, clock-wise in XZ plane
+    H1(Theta, "Zenith angle;#theta [#pi]", 200, 0, 1); // from Z axis, clock-wise in XZ plane
+    H1(cosTheta, "Zenith angle;cos(#theta)", 200, -1, 1); // from Z axis, clock-wise in XZ plane
 
     H1(Path_primary, "Path length of primary muons in TPC;Path [m]", 300, 0, 30);
     H1(Path_secondary, "Path length of secondary muons in TPC;Path [m]", 1000, 0, 10);
@@ -147,7 +149,7 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 	"EndPointz_tpcAV",
 	"pathlen",
 	"ntracks_pandoraTrack",
-	"nshowers_emshower"
+	"nshowers_pandoraShower"
     };
     tree->SetBranchStatus("*", 0);
     AnaTree::AllowBranches(tree, allowed);
@@ -211,7 +213,7 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 	//
 	// reco info
 	hists[Ntracks]->Fill(evt->ntracks_pandoraTrack);
-	hists[Nshowers]->Fill(evt->nshowers_emshower);
+	hists[Nshowers]->Fill(evt->nshowers_pandoraShower);
 
 	// gen energies
 	hists[E_gen]->Fill(evt->Eng[0]); // assuming primary is always stored first
@@ -247,7 +249,8 @@ void process_ana_basic(const char* fname = "", const char* outpref = "",
 	    phi += 180; // shift to start from -Z axis
 	    hists[Phi_fnal]->Fill(phi);
 	    hists[Phi_east]->Fill((phi<7.)?(phi-7)+360:phi-7);
-	    hists[Theta]->Fill(-evt->StartPy_tpcAV[0]/evt->StartP_tpcAV[0]);
+	    hists[Theta]->Fill(TMath::ACos(-evt->StartPy_tpcAV[0]/evt->StartP_tpcAV[0])/TMath::Pi());
+	    hists[cosTheta]->Fill(-evt->StartPy_tpcAV[0]/evt->StartP_tpcAV[0]);
 	}
 
 	int current_n_pi0 = 0;
