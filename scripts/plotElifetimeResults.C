@@ -1,5 +1,3 @@
-#define NOMINAL_LIFETIME 20.
-
 static TString gOutpref;
 
 enum {
@@ -11,7 +9,7 @@ void draw_hist(TH1* h, TString hname, const int with_labels);
 void draw_means(TH1* h);
 
 void
-plotElifetimeResults(const char* fname, const char* outpref)
+plotElifetimeResults(const char* fname, const char* outpref, float NOMINAL_LIFETIME = 3.)
 // const char* dataversion="v08_34_00",
 // 		     const char* cut="",
 // 		     const char* prefix = "",
@@ -211,7 +209,7 @@ void draw_means(TH1* h)
 	double down = gPad->GetUymin();
 
 	double x = (low + hi) * 0.5;
-	auto tt = new TText(x, up + 0.08*(up-down), Form("%.3g", mean));
+	auto tt = new TText(x, up + 0.08*(up-down), Form("%.4g", mean));
 	tt->SetTextAlign(21);
 	tt->Draw();
     }
