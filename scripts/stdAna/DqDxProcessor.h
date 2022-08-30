@@ -340,6 +340,7 @@ int DqDxProcessor::Process()
     cout<<"Starting a loop over the tree"<<endl;
     int entries_processed = 0;
     int fiftieth = size / 50;
+    if (fiftieth == 0) fiftieth = 1;
     cout<<"Will loop over "<<size<<" entries."<<endl;
 
     size_t events_passing_selection = 0;
