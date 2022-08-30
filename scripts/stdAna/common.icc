@@ -41,13 +41,17 @@ size_t attachFiles(TChain* tree, const char* fname,
 	    topdir.Append(data_version).Append("/data/");
 	} else 	if (!strcmp("imran", source)) {
 	    topdir = "/data/iyusuff/cosmicgen_20190419/data/";
+	} else 	if (strcmp("", source)) {
+	    // non-empty source, take it as the top directory for the batch subdirectories
+	    topdir = source;
+	    topdir.Append("/");
 	}
 	topdir.Append(batch + "/");
 
 	cout<<"Batch directory "<<topdir<<endl;
 	for (size_t j = 0; j<Nruns; j++) {
 	    TString runNo = Form("%lu", batchNo + j + startRun);
-	    TString fname = topdir + runNo + "/MUSUN_dunefd_" + runNo + "_gen_g4_detsim_reco_ana.root";
+	    TString fname = topdir + runNo + "/MUSUN_dunefd_" + runNo + "_*_ana.root";
 	    //cout<<"Adding run "<<runNo<<", file "<<fname<<endl;
 	    int status = tree->Add(fname, TTree::kMaxEntries);
 	}
