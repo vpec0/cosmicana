@@ -21,10 +21,13 @@ public:
 		<<batchNo<<" to the chain (unchecked)."<<endl;
 	    TString batch = Form("%lu", batchNo);
 	    TString topdir = "/data/dune/calibration/cosmic_muons/dunetpc_";
+	    TString suffix = "_ana";
 	    topdir.Append(data_version).Append("/");
 	    if (strcmp("", in_topdir)) {
 		topdir = in_topdir;
 		topdir.Append("/dunetpc_").Append(data_version).Append("/");
+		if (strcmp("",source))
+		    suffix = source;
 	    } else if (!strcmp("kumar", source)) {
 		topdir = "/data/kumar/dune/cosmic/largeproduction/";
 		topdir.Append(data_version).Append("/data/");
@@ -39,10 +42,10 @@ public:
 	    cout<<"Batch directory "<<topdir<<endl;
 	    for (size_t j = 0; j<Nruns; j++) {
 		TString runNo = Form("%lu", batchNo + j + startRun);
-		TString fname = topdir + runNo + "/MUSUN_dunefd_" + runNo + "*_ana.root";
+		TString fname = topdir + runNo + "/*_" + runNo + "_*"+suffix+".root";
 		//cout<<"Adding run "<<runNo<<", file "<<fname<<endl;
 		int status = tree->Add(fname, TTree::kMaxEntries);
-		cout<<fname<<endl;
+		//cout<<fname<<endl;
 	    }
 	    // for (auto obj: *tree->GetListOfFiles())
 	    // 	cout<<obj->GetName()<<endl;
