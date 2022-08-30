@@ -249,10 +249,12 @@ int DqDxProcessor::Initialize()
 
 TTree* DqDxProcessor::findInputTree()
 {
-    if (fIFName.Length() && fStartRun && fNruns) {
+    if (fIFName.Length() && fNruns && fStartRun) {
 
 	TString baseifname(fIFName);
 	baseifname.ReplaceAll( "{batch}", Form("%ld", (fStartRun/100)*100) );
+
+	cout<<baseifname<<endl;
 
 	//***** Input tree *****
 	auto tree = new TChain("analysistree/anatree");
@@ -261,18 +263,19 @@ TTree* DqDxProcessor::findInputTree()
 	    TString ifname(baseifname);
 	    ifname.ReplaceAll("{run}", Form("%ld", fStartRun + i) );
 	    cout<<"Attaching file "<<ifname<<endl;
-	    size += tree->Add(ifname);
+	    size += tree->Add(ifname, -1);
 	}
-	cout<<size<<" number of entries attached."<<endl;
+	cout<<size<<" number of files attached."<<endl;
 
 	anatree* evt = new anatree(tree);
 
 	fTree = tree;
 	fEvent = evt;
-	fSize = size;
 
 	if (size == 0)
 	    return 0;
+	tree->GetEntry(0);
+	fSize = size*tree->GetTree()->GetEntries();
 
 	tree->SetBranchStatus("*", 0);
 	AnaTree::AllowBranches(tree, fAllowed);
