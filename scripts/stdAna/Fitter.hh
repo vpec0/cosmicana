@@ -18,9 +18,10 @@ private:
 
 public:
     constexpr static const double gXtoT = 1./160.563; // converts cm to ms, calculated for field 0.5kV/cm and temperature 87K
-
-    static const double boundaries[5];
     constexpr static const double TPC_Z_SIZE = 232.39;
+
+    static int nboundaries;
+    static const double* boundaries;
 
     static int gDoMPV;
 
@@ -36,14 +37,22 @@ public:
 #define FOR(i, size) for (int i = 0; i < size; ++i)
 #endif
 
-const double Fitter::boundaries[] = {-726.7681, -363.38405, 0., 363.38405, 726.7681};
+const double* Fitter::boundaries = (const double[]){-726.7681, -363.38405, 0., 363.38405, 726.7681};
+int Fitter::nboundaries = 4;
+
 int Fitter::gDoMPV = 0;
+
 
 TGraphErrors* Fitter::sliceAndFit(TH2* h)
 {
+    cout<<"N boundaries: "<<nboundaries<<endl;
+    FOR(i, nboundaries) {
+	cout<<"  "<<boundaries[i]<<endl;
+    }
+
     auto n = h->GetNbinsX();
-    //auto gr = new TGraphErrors(n);
-    //cout<<"Hist "<<h->GetName()<<" with "<<n<<" bins on X axis"<<endl;
+    cout<<"Hist "<<h->GetName()<<" with "<<n<<" bins on X axis"<<endl;
+
     vector<double> vx, vy, vy_err;
 
     auto top_dir = (TDirectory*)gDirectory;
@@ -56,10 +65,14 @@ TGraphErrors* Fitter::sliceAndFit(TH2* h)
 	auto x = h->GetXaxis()->GetBinCenter(i+1);
 	double tmpxlow = h->GetXaxis()->GetBinLowEdge(i+1);;
 	double tmpxup = h->GetXaxis()->GetBinUpEdge(i+1);;
-	if (tmpxlow < boundaries[0] || tmpxup > boundaries[4]) continue;
+	if (tmpxlow < boundaries[0] || tmpxup > boundaries[nboundaries-1]) {
+	    //cout<<i<<"-th bin is out of range: low = "<<tmpxlow<<", up = "<<tmpxup<<", skipping."<<endl;
+	    continue;
+	}
 	int too_close = 0;
 	int segment = -1;
-	for (auto boundary: boundaries) {
+	FOR(iboundary, nboundaries) {
+	    auto boundary = boundaries[iboundary];
 	    if (tmpxlow > boundary) {
 		segment++;
 		continue;
@@ -69,7 +82,7 @@ TGraphErrors* Fitter::sliceAndFit(TH2* h)
 		break;
 	    }
 	}
-	if (too_close) continue;
+	if (too_close) continue; // bin crosses boundary
 
 	auto tmph = h->ProjectionY(Form("%s_%d",h->GetName(), i), i+1, i+1);
 	double low = h->GetXaxis()->GetBinLowEdge(i+1);
@@ -78,8 +91,12 @@ TGraphErrors* Fitter::sliceAndFit(TH2* h)
 	// set local range around expected dQ/dx value = ~300
 	tmph->SetAxisRange(100,450);
 
+	//cout<<"Created slice "<<i<<" from x = "<<low<<" cm to "<<hi<<" cm, with "<<tmph->GetEntries()<<" entries."<<endl;
+
 	double mpv, mpverr;
 	getMpv(tmph, mpv, mpverr);
+
+	//cout<<"After the slice fit, MPV = "<<mpv<<"."<<endl;
 	vx.push_back(x);
 	vy.push_back(mpv);
 	vy_err.push_back(mpverr);
@@ -127,7 +144,7 @@ void Fitter::Fit(TGraphErrors* gr)
 
     cout<<gr->GetName()<<": "<<endl;
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < nboundaries - 1; ++i) {
 	double low = boundaries[i] + 20.; // allow for a margin around APC/CPA centre location
 	double hi = boundaries[i+1] - 20.;
 	if (timeplot) {
@@ -166,11 +183,12 @@ TFitResultPtr Fitter::FitLangau(TH1* h, double &mpv)
     auto hcopy = (TH1*)h->Clone("tmpclone");
     const int REBIN = 4;
     hcopy->Rebin(REBIN);
+    hcopy->SetAxisRange(100,450);
 
     // first find local maximum with largest dQ/dx
     //   - this is sensitive to secondary peaks due to fluctuations
     auto sp = new TSpectrum(4);
-    int npeaks = sp->Search(hcopy, 2, "nobackground", 0.4);
+    int npeaks = sp->Search(hcopy, 3, "nobackground", 0.4);
     int maxbin = hcopy->GetMaximumBin();
     double maxloc = hcopy->GetBinCenter(maxbin);
     FOR(i, npeaks) {
@@ -182,8 +200,8 @@ TFitResultPtr Fitter::FitLangau(TH1* h, double &mpv)
 
     //fit = new TF1("gaus", "gaus");
 
-    double dlow = 0.3; //0.6; //30.;
-    double dhi = 0.2; //0.25; //70.;
+    double dlow = 0.6; //0.6; //30.;
+    double dhi = 0.5; //0.25; //70.;
     double low, hi;
 
     // find lower and upper bounds
@@ -221,8 +239,11 @@ TFitResultPtr Fitter::FitLangau(TH1* h, double &mpv)
 
     ///>>>> Do the fit <<<<
 
+    //return 0;
     // do a faster prefit - make a rebinned histogram
     auto result = hcopy->Fit(fit, "SQ", "", low, hi);
+
+    //gPad->SaveAs("prefit.pdf");
 
     if (result->IsValid()) {
     	// recalculate fit range
@@ -247,7 +268,7 @@ TFitResultPtr Fitter::FitLangau(TH1* h, double &mpv)
     // account for different bin widths in the original histogram and the copy
     fit->SetParameter(2, fit->GetParameter(2)/REBIN);
 
-    result = h->Fit(fit, "SQL", "", low, hi);
+    result = h->Fit(fit, "SLQ", "", low, hi);
     if (!gDoMPV)
 	mpv = fit->GetMaximumX(result->Parameter(1), result->Parameter(1) + result->Parameter(3));
     else
